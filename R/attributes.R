@@ -1,31 +1,32 @@
 
-
-attribute_names <- function() return(list(
-    ACR_COMPARE = c("COUNTRY", "ALLCOLROW", "ALTICLASS","SLPCLASS", "SOILCLASS",
-                    "AEZCLASS", "SPECIES", "CROPTECH", "AllMacroScen", "AllBioenScen",
-                    "IEA_SCEN", "ALLScenYear", "Value"),
-    CROP_DATA_COMPARE = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS",
-                          "AEZCLASS", "SPECIES", "ALLTECH", "ALLITEM", "MacroScen",
-                          "BioenScen", "IEA_SCEN", "ScenYear", "Value"),
-    YLD_COMPARE = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS",
-                    "AEZCLASS", "SPECIES", "CROPTECH", "ALLPRODUCT", "AllMacroScen",
-                    "AllBioenScen", "IEA_SCEN", "ALLScenYear", "Value"),
-    Land_Compare3 = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS",
-                      "AEZCLASS", "LC_TYPE", "AllMacroScen", "AllBioenScen", "IEA_SCEN",
-                      "ALLScenYear", "Value"),
-    LUCDET_Compare = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS",
-                       "AEZCLASS", "LC_TYPE", "LC_CRNT", "AllMacroScen", "AllBioenScen",
-                       "IEA_SCEN", "ALLScenYear", "Value"),
-    LIVE_COMPARE = c("ANYREGION", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS",
-                     "AEZCLASS", "LIVE_SYSTEM", "ANIMALS", "AllMacroScen", "AllBioenScen",
-                     "IEA_SCEN", "ALLScenYear", "Value")
-))
-
-read_output_csv <- function(file)
-{
-    csv = read.csv(paste("OutputData/", file, ".CSV", sep=""), head=F, as.is=TRUE)
-    colnames(csv) = attribute_names()[[file]]
-    return(csv)
-}
-
-
+attr_names = list(
+  ACR_COMPARE                  = c("COUNTRY", "ALLCOLROW", "ALTICLASS","SLPCLASS", "SOILCLASS", "USE", "SCENARIO", "YEAR", "VALUE"),
+  Land_Compare3                = c("COUNTRY", "ALLCOLROW", "ALTICLASS","SLPCLASS", "SOILCLASS", "USE", "SCENARIO", "YEAR", "VALUE"),
+  DEFORESTATION                = c("COUNTRY", "ALLCOLROW", "ALTICLASS","SLPCLASS", "SOILCLASS", "SCENARIO", "YEAR", "VALUE"),
+  FOREST_PA                    = c("COUNTRY", "ALLCOLROW", "ALTICLASS","SLPCLASS", "SOILCLASS", "SCENARIO", "YEAR", "VALUE"),
+  LIVE_BOV                     = c("COUNTRY", "ALLCOLROW", "ALTICLASS","SLPCLASS", "SOILCLASS", "SCENARIO", "YEAR", "VALUE"),
+  LIVE_SGT                     = c("COUNTRY", "ALLCOLROW", "ALTICLASS","SLPCLASS", "SOILCLASS", "SCENARIO", "YEAR", "VALUE"),
+  NATLAND_PA                   = c("COUNTRY", "ALLCOLROW", "ALTICLASS","SLPCLASS", "SOILCLASS", "SCENARIO", "YEAR", "VALUE"),
+  # implemented only for the values above so far
+  CUMULATE_DEFOR_AMAZONIA      = c("COUNTRY", "ALLCOLROW", "ALTICLASS","SLPCLASS", "SOILCLASS", "SCENARIO","YEAR", "VALUE"),
+  CUMULATE_PRODES              = c("COUNTRY", "ALLCOLROW", "VALUE"),
+  Land_Compare_FOREST_PA       = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "SCENARIO","YEAR", "VALUE"),
+  Land_Compare_FOREST_PA_DEFOR = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "SCENARIO","YEAR", "VALUE"),
+  Land_Compare_PRIFOR_PA       = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "SCENARIO","YEAR", "VALUE"),
+  LIVE_COMPARE_BOV             = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "YEAR", "VALUE"),
+  PRODES_SEM2001               = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "YEAR", "VALUE"),
+  IBGE_LIVE                    = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "LIVE", "YEAR", "VALUE"),
+  SMALL_FARMS_AREA             = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "AEZCLASS", "VALUE"),
+  ProtectedAreas_Brazil        = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "AEZCLASS", "Cover", "VALUE"),
+  IBGE_CROPAREA                = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "LC_TYPE", "YEAR", "VALUE"),
+  LANDCOVER_INIT               = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "SCENARIO", "Cover", "VALUE"),
+  LANDCOVER_INIT_PA            = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "Cover", "VALUE"),
+  LEGAL_RESERVE_PERCENTAGE     = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "AEZCLASS", "VALUE"),
+  DEBT_SURPLUSES               = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "AEZCLASS", "SCENARIO", "YEAR", "VALUE"),
+  ITC_BRAZIL                   = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "Product", "VALUE"),
+  CROP_DATA_COMPARE            = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "AEZCLASS", "SPECIES", "ALLTECH", "ALLITEM", "MacroScen", "BioenScen", "IEA_SCEN", "YEAR", "VALUE"),
+  YLD_COMPARE                  = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "AEZCLASS", "SPECIES", "CROPTECH", "ALLPRODUCT", "AllMacroScen", "AllBioenScen", "IEA_SCEN", "YEAR", "VALUE"),
+  Land_Compare3                = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "AEZCLASS", "LC_TYPE", "AllMacroScen", "AllBioenScen", "IEA_SCEN", "YEAR", "VALUE"),
+  LUCDET_Compare               = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "AEZCLASS", "LC_TYPE", "LC_CRNT", "AllMacroScen", "AllBioenScen", "IEA_SCEN", "YEAR", "VALUE"),
+  LIVE_COMPARE                 = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "AEZCLASS", "LIVE_SYSTEM", "ANIMALS", "AllMacroScen", "AllBioenScen", "IEA_SCEN", "YEAR", "VALUE")
+)

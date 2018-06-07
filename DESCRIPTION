@@ -14,11 +14,12 @@ Imports:
     tibble,
     tidyr,
     plyr,
+    readr,
     methods,
 RoxygenNote: 6.0.1
 Collate:
-    'attributes.R'
-	'generateCR.R'
+  'attributes.R'
 	'pipe.R'
+	'process.R'
 	'zzz.R'
 VignetteBuilder: knitr
