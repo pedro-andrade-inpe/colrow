@@ -1,0 +1,22 @@
+Infolayer: estadosl_2007
+Infolayer Identifier: 13
+
+Initial Coordinate(X): -73.9902384051
+Initial Coordinate(Y): -33.7513575741
+Final Coordinate(X): -32.3908752263
+Final Coordinate(Y): 5.2709719569
+
+Projection: LatLong
+Projection Identifier: 20
+Datum: WGS84
+Unit: DecimalDegrees
+Origin Longitude: 0.000000e+00
+Origin Latitude: 0.000000e+00
+Offset X: 0.000000e+00
+Offset Y: 0.000000e+00
+Standard Parallel 1: 0.000000e+00
+Standard Parallel 2: 0.000000e+00
+Scale: 1.000000e+00
+Hemisphere: South
+
+Polygons number: 202

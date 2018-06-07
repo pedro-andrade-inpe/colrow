@@ -1,0 +1,22 @@
+Infolayer: bioma
+Infolayer Identifier: 5
+
+Initial Coordinate(X): -73.9909438636
+Initial Coordinate(Y): -33.7515830050
+Final Coordinate(X): -28.8356293226
+Final Coordinate(Y): 5.2721563934
+
+Projection: LatLong
+Projection Identifier: 8
+Datum: WGS84
+Unit: DecimalDegrees
+Origin Longitude: 0.000000e+00
+Origin Latitude: 0.000000e+00
+Offset X: 0.000000e+00
+Offset Y: 0.000000e+00
+Standard Parallel 1: 0.000000e+00
+Standard Parallel 2: 0.000000e+00
+Scale: 1.000000e+00
+Hemisphere: South
+
+Polygons number: 252
