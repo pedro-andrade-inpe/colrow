@@ -55,15 +55,19 @@ processProduct <- function(product_data, attrname){
   return(res)
 }
 
+
+
 processScenario <- function(scenario, output){
-  shp <- readOGR(system.file("extdata/shape", "brasil_cr.shp", package = "simu"), encoding = "ESRI Shapefile")
-  names(shp) = "colrow"
+  shp <- readOGR(system.file("extdata/shape", "simus.shp", package = "simu"), encoding = "ESRI Shapefile", verbose = FALSE)
 
   uses <- c("ACR_COMPARE", "Land_Compare3")
 
   for(product in uses){
     data_file <- paste0(scenario, "/", product, "_", basename(scenario), ".CSV")
-    data <- read_csv(data_file, col_names = attr_names[[product]])
+
+    cat(paste0("Parsing file '", basename(data_file), "'\n"))
+
+    data <- read_csv(data_file, col_names = attr_names[[product]], progress = FALSE)
     result <- processUse(data)
 
     result
@@ -83,13 +87,18 @@ processScenario <- function(scenario, output){
 
   for(product in products){
     data_file <- paste(scenario, "/", product, "_", basename(scenario), ".CSV", sep = "")
-    product_data <- read_csv(data_file, col_names = attr_names[[product]])
+
+    cat(paste0("Parsing file '", basename(data_file), "'\n"))
+
+    product_data <- read_csv(data_file, col_names = attr_names[[product]], progress = FALSE)
     res <- processProduct(product_data, names[product])
 
     shp <- sp::merge(shp, res, by = "colrow")
   }
 
   shp@data[is.na(shp@data)] <- 0.0
+
+  cat(paste0("Writing file '", basename(scenario), ".shp'\n"))
 
   writeOGR(shp, output, basename(scenario), driver = "ESRI Shapefile", overwrite_layer = TRUE)
 }
@@ -111,8 +120,13 @@ getScenarios <- function(directory){
 #' @title Process a given directory with results from different scenarios
 #' @description Each scenario is represented as a directory, and its results
 #' are CSV files within them.
+#' @param directory The directory where the scenarios are stored.
+#' @param output The directory where the output is going to be saved. It
+#' automatically appends "/results" to this directory. As default, the
+#' output will be in the same directory where the scenarios are stored.
 #' @export
-processDirectory <- function(directory, output = paste0(directory, "/results")){
+processDirectory <- function(directory, output = directory){
+  output = paste0(output, "/results")
   dir.create(output, showWarnings = FALSE)
 
   output <- normalizePath(output)

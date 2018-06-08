@@ -6,3 +6,5 @@
 }
 
 utils::globalVariables("%>%")
+
+options(readr.num_columns = 0)
