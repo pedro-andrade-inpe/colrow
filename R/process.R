@@ -55,10 +55,8 @@ processProduct <- function(product_data, attrname){
   return(res)
 }
 
-
-
-processScenario <- function(scenario, output){
-  shp <- readOGR(system.file("extdata/shape", "simus.shp", package = "simu"), encoding = "ESRI Shapefile", verbose = FALSE)
+processScenario <- function(datafile, scenario, output){
+  shp <- readOGR(datafile, encoding = "ESRI Shapefile", verbose = FALSE)
 
   uses <- c("ACR_COMPARE", "Land_Compare3")
 
@@ -124,8 +122,11 @@ getScenarios <- function(directory){
 #' @param output The directory where the output is going to be saved. It
 #' automatically appends "/results" to this directory. As default, the
 #' output will be in the same directory where the scenarios are stored.
+#' @param datafile A string with the shapefile that has all the CRs of
+#' the output data. For each scenario, one shapefile will be created
+#' containing this file plus the output of the respective scenario.
 #' @export
-processDirectory <- function(directory, output = directory){
+processDirectory <- function(datafile, directory, output = directory){
   output = paste0(output, "/results")
   dir.create(output, showWarnings = FALSE)
 
@@ -138,7 +139,7 @@ processDirectory <- function(directory, output = directory){
   for(scenario in scenarios){
     cat(paste0("Processing scenario '", basename(scenario), "'\n"))
 
-    processScenario(scenario, output)
+    processScenario(datafile, scenario, output)
   }
 
   cat(paste0("The results were written in ", output, "'\n"))
