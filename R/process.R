@@ -3,10 +3,10 @@ extractUse <- function (alldata, use, year) {
   var_name <- paste(use, year, sep = "")
 
   result <- alldata %>%
-    select(ALLCOLROW, USE, SCENARIO, YEAR, VALUE) %>%
-    filter(YEAR == year) %>%
-    filter(USE == use) %>%
-    select(ALLCOLROW, VALUE)
+    dplyr::select(ALLCOLROW, USE, SCENARIO, YEAR, VALUE) %>%
+    dplyr::filter(YEAR == year) %>%
+    dplyr::filter(USE == use) %>%
+    dplyr::select(ALLCOLROW, VALUE)
 
   colnames(result) <- c("colrow", var_name)
   return(result)
@@ -22,7 +22,7 @@ processUse <- function(alldata){
   for (c in crops) {
     for (y in years) {
       res1 <- extractUse(alldata, c, y)
-      res <- left_join(res, res1, by = "colrow")
+      res <- dplyr::left_join(res, res1, by = "colrow")
     }
   }
 
@@ -34,9 +34,9 @@ processProduct <- function(product_data, attrname){
     var_name <- paste(attrname, year, sep = "")
 
     result <- alldata %>%
-      select(ALLCOLROW, SCENARIO, YEAR, VALUE) %>%
-      filter(YEAR == year) %>%
-      select(ALLCOLROW, VALUE)
+      dplyr::select(ALLCOLROW, SCENARIO, YEAR, VALUE) %>%
+      dplyr::filter(YEAR == year) %>%
+      dplyr::select(ALLCOLROW, VALUE)
 
     colnames(result) <- c("colrow", var_name)
     return(result)
@@ -49,7 +49,7 @@ processProduct <- function(product_data, attrname){
 
   for(y in years) {
     res1 <- extract_one(product_data, y)
-    res <- left_join(res, res1, by = "colrow")
+    res <- dplyr::left_join(res, res1, by = "colrow")
   }
 
   return(res)
@@ -67,7 +67,7 @@ processScenario <- function(scenario, output){
 
     cat(paste0("Parsing file '", basename(data_file), "'\n"))
 
-    data <- read_csv(data_file, col_names = attr_names[[product]], progress = FALSE)
+    data <- readr::read_csv(data_file, col_names = attr_names[[product]], progress = FALSE)
     result <- processUse(data)
 
     result
@@ -90,7 +90,7 @@ processScenario <- function(scenario, output){
 
     cat(paste0("Parsing file '", basename(data_file), "'\n"))
 
-    product_data <- read_csv(data_file, col_names = attr_names[[product]], progress = FALSE)
+    product_data <- readr::read_csv(data_file, col_names = attr_names[[product]], progress = FALSE)
     res <- processProduct(product_data, names[product])
 
     shp <- sp::merge(shp, res, by = "colrow")
