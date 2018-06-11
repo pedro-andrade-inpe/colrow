@@ -21,5 +21,6 @@ Collate:
   'attributes.R'
 	'pipe.R'
 	'process.R'
+	'slicing.R'
 	'zzz.R'
 VignetteBuilder: knitr

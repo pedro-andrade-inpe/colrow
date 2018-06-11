@@ -4,7 +4,14 @@
 \alias{processDirectory}
 \title{Process a given directory with results from different scenarios}
 \usage{
-processDirectory(directory, output = paste0(directory, "/results"))
+processDirectory(directory, output = directory)
+}
+\arguments{
+\item{directory}{The directory where the scenarios are stored.}
+
+\item{output}{The directory where the output is going to be saved. It
+automatically appends "/results" to this directory. As default, the
+output will be in the same directory where the scenarios are stored.}
 }
 \description{
 Each scenario is represented as a directory, and its results
