@@ -16,6 +16,7 @@ Imports:
     plyr,
     readr,
     methods,
+    magrittr,
 RoxygenNote: 6.0.1
 Collate:
   'attributes.R'
@@ -23,4 +24,4 @@ Collate:
 	'process.R'
 	'slicing.R'
 	'zzz.R'
-VignetteBuilder: knitr
+

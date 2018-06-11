@@ -8,12 +8,16 @@
 #' n slices, the legend will have n - 1 colors.
 #' @param data Any data that can be converted to a data.frame. The first column
 #' of the data will be used to compute min and max.
-#' @usage
-#' equalslices(0, 100, 5)
+#' @examples
+#' equalSteps(0, 100, 5)
 #' @export
 equalSteps <- function(min = NULL, max = NULL, slices, data = NULL){
   if(!is.null(data)){
     values = as.data.frame(data)[,1]
+
+    if(!is.null(max)) stop("Cannot use 'max' and 'data' at the same time.")
+    if(!is.null(min)) stop("Cannot use 'min' and 'data' at the same time.")
+
     max <- max(values)
     min <- min(values)
   }

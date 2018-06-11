@@ -4,14 +4,15 @@
 \alias{equalSteps}
 \title{Creates intervals with equal sizes to be used by plot functions}
 \usage{
-equalslices(0, 100, 5)
+equalSteps(min = NULL, max = NULL, slices, data = NULL)
 }
 \arguments{
 \item{min}{The minimum value}
 
 \item{max}{The maximum value}
 
-\item{slices}{The number of slices to be created}
+\item{slices}{The number of slices to be created. Note that, when you have
+n slices, the legend will have n - 1 colors.}
 
 \item{data}{Any data that can be converted to a data.frame. The first column
 of the data will be used to compute min and max.}
@@ -19,4 +20,7 @@ of the data will be used to compute min and max.}
 \description{
 Creates intervals with equal sizes from min/max values to be
 used by plot functions. If data is provided, it gets min/max from data.
+}
+\examples{
+equalSteps(0, 100, 5)
 }

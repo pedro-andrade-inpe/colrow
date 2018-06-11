@@ -3,10 +3,10 @@ extractUse <- function (alldata, use, year) {
   var_name <- paste(use, year, sep = "")
 
   result <- alldata %>%
-    dplyr::select(ALLCOLROW, USE, SCENARIO, YEAR, VALUE) %>%
-    dplyr::filter(YEAR == year) %>%
-    dplyr::filter(USE == use) %>%
-    dplyr::select(ALLCOLROW, VALUE)
+    dplyr::select_(.dots = c("ALLCOLROW", "USE", "SCENARIO", "YEAR", "VALUE")) %>%
+    dplyr::filter_(~YEAR == year) %>%
+    dplyr::filter_(~USE == use) %>%
+    dplyr::select_(.dots = c("ALLCOLROW", "VALUE"))
 
   colnames(result) <- c("colrow", var_name)
   return(result)
@@ -34,9 +34,9 @@ processProduct <- function(product_data, attrname){
     var_name <- paste(attrname, year, sep = "")
 
     result <- alldata %>%
-      dplyr::select(ALLCOLROW, SCENARIO, YEAR, VALUE) %>%
-      dplyr::filter(YEAR == year) %>%
-      dplyr::select(ALLCOLROW, VALUE)
+      dplyr::select_(.dots = c("ALLCOLROW", "SCENARIO", "YEAR", "VALUE")) %>%
+      dplyr::filter_(~YEAR == year) %>%
+      dplyr::select_(.dots = c("ALLCOLROW", "VALUE"))
 
     colnames(result) <- c("colrow", var_name)
     return(result)
@@ -56,7 +56,7 @@ processProduct <- function(product_data, attrname){
 }
 
 processScenario <- function(datafile, scenario, output){
-  shp <- readOGR(datafile, encoding = "ESRI Shapefile", verbose = FALSE)
+  shp <- rgdal::readOGR(datafile, encoding = "ESRI Shapefile", verbose = FALSE)
 
   uses <- c("ACR_COMPARE", "Land_Compare3")
 
@@ -98,7 +98,7 @@ processScenario <- function(datafile, scenario, output){
 
   cat(paste0("Writing file '", basename(scenario), ".shp'\n"))
 
-  writeOGR(shp, output, basename(scenario), driver = "ESRI Shapefile", overwrite_layer = TRUE)
+  rgdal::writeOGR(shp, output, basename(scenario), driver = "ESRI Shapefile", overwrite_layer = TRUE)
 }
 
 #' @title Return the scenarios of a directory

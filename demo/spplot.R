@@ -40,3 +40,4 @@ spplot(
   col.regions = oranges,
   sp.layout = list(biomessp, amzlegalsp)
 )
+
