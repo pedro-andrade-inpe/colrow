@@ -15,6 +15,7 @@ Imports:
     tidyr,
     plyr,
     rgdal,
+    tools,
     readr,
     methods,
     magrittr,
@@ -23,6 +24,7 @@ Collate:
   'attributes.R'
 	'pipe.R'
 	'process.R'
+	'rename.R'
 	'slicing.R'
 	'zzz.R'
 
