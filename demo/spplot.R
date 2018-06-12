@@ -1,12 +1,12 @@
 
 require(rgdal)
 require(RColorBrewer)
-require(simu)
+require(colrow)
 
-brazil_cr <- system.file("results", "IDC_Amazon.shp", package = "simu") %>% readOGR()
-biomes    <- system.file("extdata/shape", "biomas_br_pol.shp", package = "simu") %>% readOGR()
-states    <- system.file("extdata/shape", "estados_br_pol.shp", package = "simu") %>% readOGR()
-amzlegal  <- system.file("extdata/shape", "amazlegal.shp", package = "simu") %>% readOGR()
+brazil_cr <- system.file("results", "IDC_Amazon.shp", package = "colrow") %>% readOGR()
+biomes    <- system.file("extdata/shape", "biomas_br_pol.shp", package = "colrow") %>% readOGR()
+states    <- system.file("extdata/shape", "estados_br_pol.shp", package = "colrow") %>% readOGR()
+amzlegal  <- system.file("extdata/shape", "amazlegal.shp", package = "colrow") %>% readOGR()
 
 statessp   <- list("sp.polygons", states,   fill = "transparent", col = "black", add = TRUE)
 amzlegalsp <- list("sp.polygons", amzlegal, fill = "transparent", col = "black", add = TRUE, lty = 2, first = FALSE)

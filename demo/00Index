@@ -1,0 +1,3 @@
+scenarios    Create shapefiles from the output of scenarios
+spplot       Plot attribute values using shapefiles exported from scenarios
+

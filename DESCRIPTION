@@ -1,11 +1,11 @@
-Package: simu
+Package: colrow
 Type: Package
-Title: Handling SimU data
-Version: 0.0-1
-Date: 2018-06-07
+Title: Handling ColRow data exported from GAMS
+Version: 0.0-2
+Date: 2018-06-12
 Authors@R: c(person('Pedro', 'Andrade', role = c('aut', 'cre'), email = 'pedro.andrade@inpe.br'))
 Maintainer: Pedro R. Andrade <pedro.andrade@inpe.br>
-Description: A set of functions to read, handle, and plot SimU data.
+Description: A set of functions to read, handle, and plot ColRow data.
 Depends: R (>= 3.4)
 License: GPL-2 | file LICENSE
 Imports:

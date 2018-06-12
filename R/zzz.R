@@ -1,8 +1,8 @@
 
 .onAttach <- function(lib, pkg){
-    packageStartupMessage("simu - Handling SimU and CR data")
-    packageStartupMessage(sprintf("Version %s is now loaded", utils::packageDescription("simu")$Version))
-
+    packageStartupMessage("colrow - Handling ColRow (CR) data")
+    packageStartupMessage(sprintf("Version %s is now loaded", utils::packageDescription("colrow")$Version))
 }
 
 utils::globalVariables("%>%")
+
