@@ -7,7 +7,7 @@ attr_names = list(
   LIVE_BOV                     = c("COUNTRY", "ALLCOLROW", "ALTICLASS","SLPCLASS", "SOILCLASS", "SCENARIO", "YEAR", "VALUE"),
   LIVE_SGT                     = c("COUNTRY", "ALLCOLROW", "ALTICLASS","SLPCLASS", "SOILCLASS", "SCENARIO", "YEAR", "VALUE"),
   NATLAND_PA                   = c("COUNTRY", "ALLCOLROW", "ALTICLASS","SLPCLASS", "SOILCLASS", "SCENARIO", "YEAR", "VALUE"),
-  # implemented only for the values above so far
+  # currently implemented only for the values above
   CUMULATE_DEFOR_AMAZONIA      = c("COUNTRY", "ALLCOLROW", "ALTICLASS","SLPCLASS", "SOILCLASS", "SCENARIO","YEAR", "VALUE"),
   CUMULATE_PRODES              = c("COUNTRY", "ALLCOLROW", "VALUE"),
   Land_Compare_FOREST_PA       = c("COUNTRY", "ALLCOLROW", "ALTICLASS", "SLPCLASS", "SOILCLASS", "SCENARIO","YEAR", "VALUE"),

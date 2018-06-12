@@ -14,14 +14,14 @@ extractUse <- function (alldata, use, year) {
 
 processUse <- function(alldata){
   years <- unique(alldata$YEAR)
-  crops <- unique(alldata$USE)
+  uses <- unique(alldata$USE)
 
   res <- unique(alldata["ALLCOLROW"])
   colnames(res) <- c("colrow")
 
-  for (c in crops) {
+  for (u in uses) {
     for (y in years) {
-      res1 <- extractUse(alldata, c, y)
+      res1 <- extractUse(alldata, u, y)
       res <- dplyr::left_join(res, res1, by = "colrow")
     }
   }
@@ -55,17 +55,27 @@ processProduct <- function(product_data, attrname){
   return(res)
 }
 
+#' @title Read CR from a CSV file to tibble
+#' @description Read a CSV file as a tibble. The column names are identified automatically by
+#' colrow package.
+#' @param directory Path where the data is stored. Note that the last directory name will be the scenario's name.
+#' @param product Name of the product to be read. The file name will be 'product_scenario.CSV'
+#' @export
+readCR <- function(directory, product){
+  data_file <- paste0(directory, "/", product, "_", basename(directory), ".CSV")
+
+  readr::read_csv(data_file, col_names = attr_names[[product]], progress = FALSE)
+}
+
 processScenario <- function(datafile, scenario, output){
   shp <- rgdal::readOGR(datafile, encoding = "ESRI Shapefile", verbose = FALSE)
 
   uses <- c("ACR_COMPARE", "Land_Compare3")
 
   for(product in uses){
-    data_file <- paste0(scenario, "/", product, "_", basename(scenario), ".CSV")
+    cat(paste0("Parsing '", product, "'\n"))
 
-    cat(paste0("Parsing file '", basename(data_file), "'\n"))
-
-    data <- readr::read_csv(data_file, col_names = attr_names[[product]], progress = FALSE)
+    data <-readCR(scenario, product)
     result <- processUse(data)
 
     result
@@ -84,13 +94,10 @@ processScenario <- function(datafile, scenario, output){
   )
 
   for(product in products){
-    data_file <- paste(scenario, "/", product, "_", basename(scenario), ".CSV", sep = "")
+    cat(paste0("Parsing '", product, "'\n"))
 
-    cat(paste0("Parsing file '", basename(data_file), "'\n"))
-
-    product_data <- readr::read_csv(data_file, col_names = attr_names[[product]], progress = FALSE)
-    res <- processProduct(product_data, names[product])
-
+    data <-readCR(scenario, product)
+    res <- processProduct(data, names[product])
     shp <- sp::merge(shp, res, by = "colrow")
   }
 
@@ -132,7 +139,6 @@ processDirectory <- function(datafile, directory, output = directory){
 
   output <- normalizePath(output)
   directory <- normalizePath(directory)
-
   scenarios <- getScenarios(directory)
 
   if(length(scenarios) == 0) stop(paste0("Could not find any scenario in directory '", directory, "'"))
@@ -145,4 +151,3 @@ processDirectory <- function(datafile, directory, output = directory){
 
   cat(paste0("The results were written in ", output, "'\n"))
 }
-

@@ -27,8 +27,3 @@ renameShape <- function(filename, newname){
     }
   }
 }
-
-
-
-
-
