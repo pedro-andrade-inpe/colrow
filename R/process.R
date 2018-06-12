@@ -131,6 +131,7 @@ processDirectory <- function(datafile, directory, output = directory){
   dir.create(output, showWarnings = FALSE)
 
   output <- normalizePath(output)
+  directory <- normalizePath(directory)
 
   scenarios <- getScenarios(directory)
 

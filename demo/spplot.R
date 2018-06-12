@@ -3,7 +3,7 @@ require(rgdal)
 require(RColorBrewer)
 require(colrow)
 
-brazil_cr <- system.file("results", "IDC_Amazon.shp", package = "colrow") %>% readOGR()
+brazil_cr <- system.file("extdata/results", "IDC_Amazon.shp", package = "colrow") %>% readOGR()
 biomes    <- system.file("extdata/shape", "biomas_br_pol.shp", package = "colrow") %>% readOGR()
 states    <- system.file("extdata/shape", "estados_br_pol.shp", package = "colrow") %>% readOGR()
 amzlegal  <- system.file("extdata/shape", "amazlegal.shp", package = "colrow") %>% readOGR()
@@ -30,7 +30,7 @@ spplot(
   sp.layout = list(biomessp, amzlegalsp)
 )
 
-cuts <- equalSteps(data = brazil_cr[,"Rice2000"], steps = 6)
+cuts <- equalSteps(data = brazil_cr[,"Rice2000"], slices = 6)
 cuts
 
 spplot(

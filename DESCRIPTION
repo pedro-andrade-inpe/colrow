@@ -14,6 +14,7 @@ Imports:
     tibble,
     tidyr,
     plyr,
+    rgdal,
     readr,
     methods,
     magrittr,
