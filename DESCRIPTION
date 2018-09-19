@@ -18,6 +18,8 @@ Imports:
     tools,
     readr,
     methods,
+    crayon,
+    stringdist,
     magrittr,
 RoxygenNote: 6.0.1
 Collate:
@@ -25,6 +27,7 @@ Collate:
 	'pipe.R'
 	'process.R'
 	'rename.R'
+	'geometries.R'
 	'slicing.R'
 	'zzz.R'
 

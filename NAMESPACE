@@ -2,7 +2,11 @@
 
 export("%>%")
 export(equalSteps)
+export(getCR)
+export(getCountries)
+export(getLU)
 export(getScenarios)
+export(getSimU)
 export(processDirectory)
 export(readCR)
 export(renameShape)
