@@ -62,11 +62,11 @@ getSimU <- function(countryName, dataDirectory){
 
   cat(crayon::green("Reading all SimUs\n"))
 
-  simu <- read_sf(paste0(dataDirectory, "SimU_all.shp"))
+  simu <- sf::read_sf(paste0(dataDirectory, "SimU_all.shp"))
 
   cat(crayon::green("Subsetting SimUs (please ignore next message)\n"))
 
-  simuCountry <- simu[country, op = st_intersects]
+  simuCountry <- simu[country, op = sf::st_intersects]
 
   simuCountry %>% dplyr::filter(SimUID != 0) %>% dplyr::select(SimUID, Grd30, COUNTRY, HRU)
 }
@@ -91,7 +91,7 @@ getLU <- function(countryName, dataDirectory){
 
   cat(crayon::green("Computing union of SimUs within the same LU (please ignore next warning)\n"))
 
-  countryLU <- maptools::unionSpatialPolygons(as_Spatial(data), data$LU)
+  countryLU <- maptools::unionSpatialPolygons(sf::as_Spatial(data), data$LU)
 
   ids <- row.names(countryLU)
 
@@ -125,7 +125,7 @@ getCR <- function(countryName, dataDirectory){
   res <- res %>% tidyr::separate("Grd30", c("X", "Y")) %>%
     dplyr::mutate(ColRow = paste0("CR", X, Y))
 
-  countryCR <- maptools::unionSpatialPolygons(as_Spatial(res), res$ColRow)
+  countryCR <- maptools::unionSpatialPolygons(sf::as_Spatial(res), res$ColRow)
   ids <- row.names(countryCR)
 
   countryCR <- sf::st_as_sf(countryCR)
