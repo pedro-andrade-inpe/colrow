@@ -68,7 +68,10 @@ getSimU <- function(countryName, dataDirectory){
 
   simuCountry <- simu[country, op = sf::st_intersects]
 
+  countryNumber <- simuCountry$COUNTRY %>% table() %>% which.max() %>% names() %>% as.numeric()
+
   simuCountry %>%
+    dplyr::filter(COUNTRY == countryNumber) %>%
     dplyr::filter(SimUID != 0) %>%
     dplyr::mutate(ID = SimUID) %>%
     dplyr::select(ID, Grd30)
