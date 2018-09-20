@@ -68,7 +68,10 @@ getSimU <- function(countryName, dataDirectory){
 
   simuCountry <- simu[country, op = sf::st_intersects]
 
-  simuCountry %>% dplyr::filter(SimUID != 0) %>% dplyr::select(SimUID, Grd30, COUNTRY, HRU)
+  simuCountry %>%
+    dplyr::filter(SimUID != 0) %>%
+    dplyr::mutate(ID = SimUID) %>%
+    dplyr::select(ID, Grd30)
 }
 
 #' @title Return LU geometries for a given country.
@@ -83,7 +86,7 @@ getLU <- function(countryName, dataDirectory){
 
   lusimu <- LU2SimU()
 
-  names(lusimu)[1] <- "SimUID"
+  names(lusimu)[1] <- "ID"
 
   cat(crayon::green("Merging data\n"))
 
@@ -96,7 +99,7 @@ getLU <- function(countryName, dataDirectory){
   ids <- row.names(countryLU)
 
   countryLU <- sf::st_as_sf(countryLU)
-  countryLU$LU <- ids
+  countryLU$ID <- ids
 
   countryLU
 }
@@ -129,7 +132,7 @@ getCR <- function(countryName, dataDirectory){
   ids <- row.names(countryCR)
 
   countryCR <- sf::st_as_sf(countryCR)
-  countryCR$CR <- ids
+  countryCR$ID <- ids
 
   countryCR
 }

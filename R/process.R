@@ -22,7 +22,7 @@ processUse <- function(alldata){
   for (u in uses) {
     for (y in years) {
       res1 <- extractUse(alldata, u, y)
-      res <- dplyr::left_join(res, res1, by = "colrow")
+      res <- dplyr::left_join(res, res1, by = "ID")
     }
   }
 
@@ -49,7 +49,7 @@ processProduct <- function(product_data, attrname){
 
   for(y in years) {
     res1 <- extract_one(product_data, y)
-    res <- dplyr::left_join(res, res1, by = "colrow")
+    res <- dplyr::left_join(res, res1, by = "ID")
   }
 
   return(res)
@@ -80,7 +80,7 @@ processScenario <- function(datafile, scenario, output){
 
     result
 
-    shp <- sp::merge(shp, result, by = "colrow")
+    shp <- sp::merge(shp, result, by = "ID")
   }
 
   products <- c("FOREST_PA", "DEFORESTATION", "LIVE_BOV", "LIVE_SGT", "NATLAND_PA")
@@ -98,7 +98,7 @@ processScenario <- function(datafile, scenario, output){
 
     data <-readCR(scenario, product)
     res <- processProduct(data, names[product])
-    shp <- sp::merge(shp, res, by = "colrow")
+    shp <- sp::merge(shp, res, by = "ID")
   }
 
   shp@data[is.na(shp@data)] <- 0.0
