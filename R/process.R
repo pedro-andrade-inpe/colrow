@@ -142,6 +142,27 @@ processFile <- function(shapefile, csvfile, description, outputFile = NULL, conv
   if(is.null(outputFile))
      return(output)
   else{
+    cat(paste0("Renaming attributes according to convertList\n"))
+    mynames = names(output)
+
+    for(name in names(convertList)){
+      mynames <- stringr::str_replace_all(mynames, name, convertList[[name]])
+    }
+
+    names(output) <- mynames
+
+    tooLarge <- mynames[nchar(mynames) > 10]
+
+    if(length(tooLarge) > 0){
+      cat(paste0(length(tooLarge), " attributes have more than 10 characters and will be truncated\n"))
+      if(length(tooLarge) <= 20)
+        cat(paste0("They are: ", paste(tooLarge, collapse = ", "), "\n"))
+      else
+        cat(paste0("The first 20 are: ", paste(tooLarge[1:20], collapse = ", "), "\n"))
+    }
+    else
+      cat(paste0("No attribute has more than 10 characters\n"))
+
     cat(paste0("Writing output file: ", outputFile), "\n")
     sf::write_sf(output, outputFile, delete_layer = TRUE)
   }
