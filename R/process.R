@@ -67,6 +67,68 @@ readCR <- function(directory, product){
   readr::read_csv(data_file, col_names = attr_names[[product]], progress = FALSE)
 }
 
+#' @title Convert a given output csv file to a shapefile.
+#' @description
+#' @param datafile Name of the input shapefile. This file must be created using getCR,
+#' getLU, or getSimU.
+#' @param csvfile l The output csv file to be exported.
+#' @param outputFile Name of the shapefile to be saved.
+#' @param description A vector of strings with the attribute names.
+#' @param convertList A list whose indexes are attribute values from the csv file and whose
+#' values are going to replace the attribute values from the csv file. Both attributes and
+#' values must be string.
+#' @export
+processFile <- function(shapefile, csvfile, description, outputFile = NULL, convertList = NULL){
+  cat(paste0("Reading shapefile: ", shapefile, "\n"))
+  shp <- sf::read_sf(shapefile)
+
+  cat(paste0("Reading data file: ", csvfile, "\n"))
+
+  data <- readr::read_csv(csvfile, col_names = description, progress = FALSE)
+  ## error when the amount of attributes do not match the description
+
+  counts <- data %>% dplyr::summarise_all(dplyr::funs(dplyr::n_distinct(.)))
+
+  removePos <- which(counts == 1)
+  removed <- names(counts)[removePos]
+  cat(paste0("Ignored attributes: ", paste(removed, collapse = ", "), "\n"))
+
+  toBeJoined <- dplyr::setdiff(names(counts), c(removed, "ID", "VALUE"))
+
+  cat(paste0("Attributes to be joined: ", paste(toBeJoined, collapse = ", "), "\n"))
+
+  for(attr in toBeJoined){
+    cat(paste0(attr, ": ", paste(unique(data[[attr]]), collapse = ", ")), "\n")
+  }
+
+  cat(paste0("Spreading the data\n"))
+
+  result <- dplyr::select(data, -removePos) %>%
+    tidyr::unite(KEY, toBeJoined, sep = "") %>%
+    ## aqui criar um group_by e aplicar operacao de soma/media caso seja necessario
+    tidyr::spread(key = KEY, VALUE)
+
+  cat(paste0(dim(result)[2], " attributes were created\n"))
+
+  cat(paste0("Merging the data\n"))
+  output <- suppressMessages(dplyr::left_join(shp, result))
+
+  nas <- length(which(is.na(output)))
+
+  if(nas > 0){
+    cat(paste0("Replacing ", nas, " NA values by zero\n"))
+
+    output[is.na(output)] <- 0
+  }
+
+  if(is.null(outputFile))
+     return(output)
+  else{
+    cat(paste0("Writing output file: ", outputFile), "\n")
+    sf::write_sf(output, outputFile, delete_layer = TRUE)
+  }
+}
+
 processScenario <- function(datafile, scenario, output){
   shp <- rgdal::readOGR(datafile, encoding = "ESRI Shapefile", verbose = FALSE)
 
