@@ -1,4 +1,11 @@
 
+#' @title Creates a vector of strings from variable names
+#' @description Convert a set of variable names in a vector of strings with their names.
+#' This function is useful to name the attributes to be read from CSV files.
+#' @param ... Names of the variables.
+#' @export
+attrs <-function(...) paste(substitute(list(...)))[-1]
+
 extractUse <- function (alldata, use, year) {
   var_name <- paste(use, year, sep = "")
 
@@ -68,7 +75,7 @@ readCR <- function(directory, product){
 }
 
 #' @title Convert a given output csv file to a shapefile.
-#' @description
+#' @description Process a fiven csv and convert it to a shapefile.
 #' @param datafile Name of the input shapefile. This file must be created using getCR,
 #' getLU, or getSimU.
 #' @param csvfile l The output csv file to be exported.
