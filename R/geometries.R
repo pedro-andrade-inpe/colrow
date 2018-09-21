@@ -17,19 +17,16 @@ LU2CR <- function(){
 
 ## Map from LU to SimU
 LU2SimU <- function(){
-  data <- system.file("extdata/representations/LUtoSimU.txt", package = "colrow") %>%
+  system.file("extdata/representations/LUtoSimU.txt", package = "colrow") %>%
     read.csv(header = FALSE, as.is = TRUE) %>%
-    unlist() %>% tibble::tibble()
-
-  colnames(data) <- "values"
-  data <- data[-dim(data)[1],] # remove the last element, which is ""
-
-  data <- dplyr::mutate(data, values = stringr::str_replace_all(values, " ", "")) %>%
+    unlist() %>%
+    tibble::tibble() %>%
+    magrittr::set_colnames("values") %>%
+    dplyr::mutate(values = stringr::str_replace_all(values, " ", "")) %>%
+    dplyr::filter(values != "") %>%
     tidyr::separate("values", c("SimU", "LU")) %>%
     dplyr::group_by(SimU) %>%
-    dplyr::arrange(.by_group = TRUE)
-
-  data[-which(is.na(data[,"LU"])),] %>%
+    dplyr::arrange(.by_group = TRUE) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(SimU = as.numeric(SimU))
 }
@@ -64,9 +61,9 @@ getSimU <- function(countryName, dataDirectory){
 
   simu <- sf::read_sf(paste0(dataDirectory, "SimU_all.shp"))
 
-  cat(crayon::green("Subsetting SimUs (please ignore next message)\n"))
+  cat(crayon::green("Subsetting SimUs\n"))
 
-  simuCountry <- simu[country, op = sf::st_intersects]
+  simuCountry <- suppressMessages(simu[country, op = sf::st_intersects])
 
   countryNumber <- simuCountry$COUNTRY %>% table() %>% which.max() %>% names() %>% as.numeric()
 
@@ -95,7 +92,7 @@ getLU <- function(countryName, dataDirectory){
 
   data <- merge(res, lusimu)
 
-  cat(crayon::green("Computing union of SimUs within the same LU (please ignore next warning)\n"))
+  cat(crayon::green("Computing union of SimUs within the same LU\n"))
 
   countryLU <- maptools::unionSpatialPolygons(sf::as_Spatial(data), data$LU)
 

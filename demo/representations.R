@@ -6,7 +6,7 @@ data <- "c:/Users/pedro/Dropbox/colrow/"
 
 #colrow::getCountries(data) # All the available countries
 
-country <- "Colombia"
+country <- "Brazil"
 
 myLU   <- colrow::getLU  (country, data)
 myCR   <- colrow::getCR  (country, data)
