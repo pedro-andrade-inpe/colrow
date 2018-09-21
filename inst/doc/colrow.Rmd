@@ -1,0 +1,154 @@
+---
+title: 'colrow: Handling SimU, CR, and LU data'
+author: "Pedro R. Andrade"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    df_print: paged
+  pdf_document:
+    fig_caption: yes
+    latex_engine: pdflatex
+abstract: This package functions to handle SimU, CR, and LU data.
+vignette: |
+  %\VignetteEngine{knitr::rmarkdown} %\VignetteIndexEntry{colrow: Handling SimU, CR, and LU datas} %\VignetteEncoding{UTF-8}
+---
+
+# Introduction 
+
+This package allows users to handle CR, SimU, and LU data. In order to
+start, it is necessary to install the package from GitHub.
+
+```{r, eval = FALSE}
+devtools::install_github("pedro-andrade-inpe/colrow")
+```
+
+# Creating shapefiles for a given country
+
+First load the package.
+
+```{r}
+require(colrow)
+```
+
+
+Download world data 
+[here](https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0)
+and save them in a single directory. Create a variable in R to store this directory.
+
+```{r}
+data <- "c:/Users/pedro/Dropbox/colrow/"
+```
+
+See the countries available. The code below shows only the first 10. If the files are
+not stored in the data variable it will not work.
+
+```{r}
+colrow::getCountries(data)[1:10]
+```
+
+Then use get functions to generate the data for a given country.
+
+```{r}
+country <- "Brazil"
+
+myLU   <- colrow::getLU  (country, data)
+myCR   <- colrow::getCR  (country, data)
+mySimU <- colrow::getSimU(country, data)
+```
+
+To see that everything is correct, plot the data.
+
+```{r}
+par(mfrow = c(1, 3))
+
+plot(sf::st_geometry(mySimU), main = "SimU", col = "red"); box()
+plot(sf::st_geometry(myCR),   main = "CR", col = "blue");   box()
+plot(sf::st_geometry(myLU),   main = "LU", col ="green");   box()
+```
+
+Finally, save the data to be used by the processing functions. Each of this files
+has a column ID that will be used to match the objects from the CSV file.
+
+```{r}
+sf::write_sf(myLU, paste0(country, "LU.shp"))
+sf::write_sf(myCR, paste0(country, "CR.shp"))
+sf::write_sf(mySimU, paste0(country, "SimU.shp"))
+```
+
+# Processing outputs
+
+To process a file, it is necessary to choose the shapefile above that matches
+the representation used in the csv, a csv file and a vector of attribute names.
+These names must have one attribute called "ID" and another called "VALUE".
+
+```{r}
+csvfile <- system.file("extdata/scenarios/FC/Land_Compare3_FC.csv", package = "colrow")
+attributes <- c("COUNTRY", "ID", "ALTICLASS","SLPCLASS", "SOILCLASS", "USE", "SCENARIO", "YEAR", "VALUE")
+
+result <- colrow::processFile(
+  "BrazilCR.shp",
+  csvfile,
+  attributes
+)
+```
+
+See the attributes created. It concatenates the attribute values to create the attribute names.
+
+```{r}
+names(result)
+```
+
+Basic plot.
+
+```{r}
+plot(result["CrpLnd2000"])
+```
+
+It is also possible to save the output.
+
+```{r}
+result <- colrow::processFile(
+  "BrazilCR.shp",
+  csvfile,
+  attributes,
+  "brazilOutput.shp"
+)
+```
+
+Note that shapefiles have limits: 255 or less columns, 10 or less characters in the attribute
+names. When working with large attribute names, it is necessary to simplify the names.
+
+```{r}
+convert <- list(
+  CrpLnd = "cr", PriFor = "pr",
+  NatLnd = "nl", ForReg = "fr",
+  GrsLnd = "gl", MngFor = "mf",
+  PltFor = "pl" 
+)
+```
+
+If you want to simplify the years to two characters, just run:
+
+```{r}
+for(year in paste(seq(2000, 2050, 10))) # from 2000, 2010, ..., 2050
+  convert[[year]] = substr(year, 3, 4) # to 00, 10, ..., 50
+
+convert
+```
+
+```{r}
+result <- colrow::processFile(
+  "BrazilCR.shp",
+  csvfile,
+  attributes,
+  "brazilOutput.shp",
+  convert
+)
+```
+
+# Plotting outputs
+
+
+# Final remarks
+
+If you have suggestions or want to report an error, please visit the [GitHup page](https://github.com/pedro-andrade-inpe/colrow).
