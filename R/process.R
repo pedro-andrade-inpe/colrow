@@ -87,6 +87,24 @@ processFile <- function(shapefile, csvfile, description, outputFile = NULL, conv
   data <- readr::read_csv(csvfile, col_names = description, progress = FALSE)
   ## error when the amount of attributes do not match the description
 
+  # message when the amount of objects do not match the shp file
+  shpid <- shp$ID
+  dataid <- data$ID
+
+  if(!dplyr::setequal(shpid, dataid)){
+    diff1 <- dplyr::setdiff(shpid, dataid)
+
+    ldiff1 <- length(diff1)
+    if(ldiff1 > 0)
+      message(ldiff1, " objects belong to the shapefile but not to the csv file: ", paste(diff1, collapse = ", "))
+
+    diff2 <- dplyr::setdiff(dataid, shpid)
+
+    ldiff2 <- length(diff2)
+    if(ldiff2 > 0)
+      message(ldiff2, "objects belong to the csv file but not to the shapefile: ", paste(diff2, collapse = ", "))
+  }
+
   counts <- data %>% dplyr::summarise_all(dplyr::funs(dplyr::n_distinct(.)))
 
   removePos <- which(counts == 1)
