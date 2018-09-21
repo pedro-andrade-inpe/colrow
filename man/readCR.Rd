@@ -6,3 +6,12 @@
 \usage{
 readCR(directory, product)
 }
+\arguments{
+\item{directory}{Path where the data is stored. Note that the last directory name will be the scenario's name.}
+
+\item{product}{Name of the product to be read. The file name will be 'product_scenario.CSV'}
+}
+\description{
+Read a CSV file as a tibble. The column names are identified automatically by
+colrow package.
+}

@@ -84,7 +84,7 @@ processFile <- function(shapefile, csvfile, description, outputFile = NULL, conv
 
   cat(paste0("Reading data file: ", csvfile, "\n"))
 
-  data <- readr::read_csv(csvfile, col_names = description, progress = FALSE)
+  data <- suppressMessages(readr::read_csv(csvfile, col_names = description, progress = FALSE))
   ## error when the amount of attributes do not match the description
 
   # message when the amount of objects do not match the shp file
