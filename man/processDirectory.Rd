@@ -4,10 +4,10 @@
 \alias{processDirectory}
 \title{Process a given directory with results from different scenarios}
 \usage{
-processDirectory(datafile, directory, output = directory)
+processDirectory(shapefile, directory, output = directory)
 }
 \arguments{
-\item{datafile}{A string with the shapefile that has all the CRs of
+\item{shapefile}{A string with the shapefile that has all the CRs of
 the output data. For each scenario, one shapefile will be created
 containing this file plus the output of the respective scenario.}
 

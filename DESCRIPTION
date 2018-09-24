@@ -1,7 +1,7 @@
 Package: colrow
 Type: Package
 Title: Handling SimU, CR, and LU data
-Version: 0.1-0
+Version: 0.1-1
 Date: 2018-06-12
 Authors@R: c(person('Pedro', 'Andrade', role = c('aut', 'cre'), email = 'pedro.andrade@inpe.br'))
 Maintainer: Pedro R. Andrade <pedro.andrade@inpe.br>
@@ -23,7 +23,6 @@ Imports:
     magrittr,
 RoxygenNote: 6.0.1
 Collate:
-  'attributes.R'
 	'pipe.R'
 	'process.R'
 	'rename.R'
