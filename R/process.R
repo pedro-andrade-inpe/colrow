@@ -13,7 +13,7 @@ attrs <-function(...) paste(substitute(list(...)))[-1]
 #' @param product Name of the product to be read. The file name will be 'product_scenario.CSV'
 #' @export
 readCSV <- function(csvfile, product){
-  suppressMessages(readr::read_csv(csvfile, col_names = product, progress = TRUE))
+  suppressMessages(readr::read_csv(csvfile, col_names = product, progress = FALSE))
 }
 
 #' @title Convert a given output csv file to a shapefile.

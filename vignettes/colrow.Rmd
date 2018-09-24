@@ -1,14 +1,15 @@
 ---
 title: 'colrow: Handling SimU, CR, and LU data'
 author: "Pedro R. Andrade"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
+date: "`r format('24 September 2018')`"
+urlcolor: blue
 output:
   pdf_document:
     fig_caption: yes
     latex_engine: pdflatex
   html_document:
     df_print: paged
-abstract: This package has functions to handle Simulation Units (SimU), ColRow (CR), and Large Unit (LU) data.
+abstract: This package has functions to handle Simulation Units (SimU), ColRow (CR), and Large Unit (LU) data. It shows examples on how to export them as shapefiles, create maps, as well as summarize and plot them over time.
 vignette: |
   %\VignetteEngine{knitr::rmarkdown} %\VignetteIndexEntry{colrow: Handling SimU, CR, and LU datas} %\VignetteEncoding{UTF-8}
 ---
@@ -30,7 +31,7 @@ First load the package.
 require(colrow)
 ```
 
-Download world data from
+Download world data from Dropbox
 [here](https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0)
 and save them in a single directory. Create a variable in R to store this directory.
 
@@ -38,20 +39,22 @@ and save them in a single directory. Create a variable in R to store this direct
 dataDir <- "c:/Users/pedro/Dropbox/colrow/"
 ```
 
-The content of the directory should be as shown below.
+The content of the directory should have 17 files as shown below.
 
 ```{r}
 list.files(dataDir)
 ```
 
-See the countries available. The code below shows only the first 10.
+See the available countries in alphabetical order, use `getCountries()`.
+The code below shows the first 10.
 
 ```{r}
 colrow::getCountries(dataDir)[1:10]
 ```
 
-Then use get functions to generate the data for a given country. It must be written
-in the same way as one of the outputs of `getCountries()`.
+Then use `getLU()`, `getCR()`, and/or `getSimU()` to generate geospatial data for a given country.
+They get as first argument the country name written in the same way as one of the outputs of `getCountries()`. The second argument is the directory where the data downloaded from Dropbox
+was stored. These functions take some time to execute.
 
 ```{r}
 country <- "Brazil"
@@ -64,13 +67,15 @@ mySimU <- colrow::getSimU(country, dataDir)
 To see that everything is correct, plot the data.
 
 ```{r}
+par(mfrow = c(1, 3), mar = c(5, 0.1, 5, 0.1))
+
 plot(sf::st_geometry(mySimU), main = "SimU", col = "red"); box()
-plot(sf::st_geometry(myCR), main = "CR", col = "blue"); box()
-plot(sf::st_geometry(myLU), main = "LU", col ="green"); box()
+plot(sf::st_geometry(myCR),   main = "CR", col = "blue"); box()
+plot(sf::st_geometry(myLU),   main = "LU", col ="green"); box()
 ```
 
 Finally, save the data to be used by the processing functions. Each of this files
-has a column ID that will be used to match the objects from the CSV file.
+has a column named `ID` that will be used to match the objects from the CSV data.
 
 ```{r}
 sf::write_sf(myLU, paste0(country, "LU.shp"))
@@ -80,10 +85,13 @@ sf::write_sf(mySimU, paste0(country, "SimU.shp"))
 
 # Processing outputs
 
-To process a file, it is necessary to choose the shapefile above that matches
-the representation used in the csv, a csv file and a vector of attribute names.
-These names must have one attribute called `ID` and another called `VALUE`. You can use
-`colrow::attrs()` to avoid quotes.
+To process a CSV file, it is necessary to choose the created shapefile that matches
+the representation used in the csv. Then, it is necessary to define the attribute names,
+as the CSV files do not store a header.
+These names must have one attribute called `ID` and another called `VALUE`.
+Function `processFile()` gets the shapefile,
+the CSV file, and the description of the attributes as arguments.
+You can use `colrow::attrs()` to avoid quotes.
 
 ```{r}
 csvfile <- system.file("extdata/scenarios/FC/Land_Compare3_FC.csv", package = "colrow")
@@ -96,20 +104,23 @@ result <- colrow::processFile(
 )
 ```
 
-See the attributes created. It concatenates the attribute values to create the attribute names.
+This function automatically ignores all attributes that have only one value. The other
+attributes (except `ID` and `VALUE`) compose the created attribute names. They are
+concatenated according to their order in the CSV file.
 
 ```{r}
 names(result)
 ```
 
-Basic plot.
+It is possible to plot the created attributes by simply calling `plot()`, selecting
+a given attribute.
 
 ```{r}
 plot(result["CrpLnd2000"])
 ```
 
-It is also possible to save the output when processing a file. In this case, the function
-does not return anything.
+It is also possible to use `processFile()` to save the output when processing a file by adding
+a fourth argument with the output file name. In this case, this function does not return anything.
 
 ```{r}
 colrow::processFile(
@@ -120,8 +131,9 @@ colrow::processFile(
 )
 ```
 
-Note that shapefiles have limits: 255 or less columns, 10 or less characters in the attribute
-names. When working with large attribute names, it is necessary to simplify the names.
+Note that shapefiles have limits: 255 or less columns, ten or less characters in the attribute
+names. When working with large attribute names, it is necessary to simplify the names. In the
+case below, seven names will be replaced. For instance, `CrpLnd` will be replaced by `cr` in the attribute names.
 
 ```{r}
 convert <- list(
@@ -141,8 +153,10 @@ for(year in paste(seq(2000, 2050, 10))) # from 2000, 2010, ..., 2050
 unlist(convert)
 ```
 
+Finally, these simplifications can be used as fifth argument to `processFile()`.
+
 ```{r}
-result <- colrow::processFile(
+colrow::processFile(
   "BrazilCR.shp",
   csvfile,
   attributes,
@@ -153,7 +167,100 @@ result <- colrow::processFile(
 
 # Plotting outputs
 
-More plotting examples.
+The example of plotting in this section uses `tmap` package.
+
+```{r}
+require(tmap)
+```
+
+In this example, we will draw the Brazilian Biomes on top of the ColRows. The shapefile
+with this data is stored in file `br_biomes.shp` available within `colrow` package.
+
+```{r}
+biomes <- system.file("extdata/shape", "br_biomes.shp", package = "colrow") %>% sf::read_sf()
+```
+
+Then select a palette from the functions availables in `RColorBrewer` using `brewer.pal()`
+(see the description of all colors available [here](http://colorbrewer2.org)) and
+choose the cuts to represent the intervals of each slice. In the code below, as we have
+seven cuts, we need to define six colors.
+
+```{r}
+max(result$GrsLnd2010)
+
+cuts <- c(0, 50, 100, 150, 200, 250, 305)
+rdPu <- RColorBrewer::brewer.pal(6, "RdPu")
+```
+
+Finally, use `tm_shape()`, `tm_fill()`, and `tm_borders()` to draw the map.
+
+```{r}
+tm_shape(result) +
+  tm_fill(col = "GrsLnd2010", palette = rdPu, breaks = cuts, title = "Grass 2010") +
+  tm_shape(biomes) +
+  tm_borders(lwd = 1, col = "black")
+```
+
+# Handling csv files
+
+You can handle csv files directly to create charts or to compute values without
+creating shapefiles. First read data as a tibble using `readCSV()`:
+
+```{r}
+data <- colrow::readCSV(
+  system.file("extdata/scenarios/FC/Land_Compare3_FC.csv", package = "colrow"),
+  colrow::attrs(COUNTRY, ID, ALTICLASS, SLPCLASS, SOILCLASS, USE, SCENARIO, YEAR, VALUE)
+)
+```
+
+To get the unique values per class, just use `unique()`:
+
+```{r}
+unique(data$USE)
+unique(data$YEAR)
+```
+
+To check if the sum of all land use areas are the same for each year use some `dplyr` functions:
+
+```{r}
+result <- data %>%
+  dplyr::group_by(YEAR) %>%
+  dplyr::summarise(VALUE = sum(VALUE))
+
+result
+```
+
+Then let us now compute the total of each land use area per year and rename the
+attributes in order to use them directly in the plot.
+
+```{r}
+result <- data %>%
+  dplyr::group_by(YEAR, USE) %>%
+  dplyr::summarise(VALUE = sum(VALUE)) %>%  # sum by year/use
+  dplyr::mutate(Year = YEAR, Use = USE) %>% # rename variables
+  dplyr::mutate(Use = dplyr::recode(Use,    # rename attributes
+    CrpLnd = "Crop Land",
+    ForReg = "Forest Regrowth",
+    GrsLnd = "Grass Land",
+    MngFor = "Managed Forest",
+    NatLnd = "Natural Land",
+    PltFor = "Planted Forest",
+    PriFor = "Primary Forest"))
+
+result
+```
+
+Finally, just use `ggplot` to draw the evolution of each land use area per year.
+
+```{r}
+require(ggplot2)
+
+ggplot(result) +
+  aes(x = Year, y = VALUE, colour = Use) +
+  geom_line(lwd = 1.5) +
+  theme_bw() +
+  ylab("Total (ha)")
+```
 
 # Final remarks
 
