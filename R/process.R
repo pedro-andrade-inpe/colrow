@@ -26,8 +26,11 @@ readCSV <- function(csvfile, product){
 #' @param convertList A list whose indexes are attribute values from the csv file and whose
 #' values are going to replace the attribute values from the csv file. Both attributes and
 #' values must be string.
+#' @param summarize A function to be used to join values with the same ID and attributes
+#' to be joinded. As default, it will use sum, but it is possible to use functions such as
+#' average.
 #' @export
-processFile <- function(shapefile, csvfile, description, outputFile = NULL, convertList = NULL){
+processFile <- function(shapefile, csvfile, description, outputFile = NULL, convertList = NULL, summarize = sum){
   cat(paste0("Reading shapefile: ", shapefile, "\n"))
   shp <- sf::read_sf(shapefile)
 
@@ -75,7 +78,8 @@ processFile <- function(shapefile, csvfile, description, outputFile = NULL, conv
 
   result <- dplyr::select(data, -removePos) %>%
     tidyr::unite(KEY, toBeJoined, sep = "") %>%
-    ## aqui criar um group_by e aplicar operacao de soma/media caso seja necessario
+    dplyr::group_by(ID, KEY) %>%
+    dplyr::summarise(VALUE = summarize(VALUE)) %>%
     tidyr::spread(key = KEY, VALUE)
 
   cat(paste0(dim(result)[2], " attributes were created\n"))

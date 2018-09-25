@@ -5,7 +5,7 @@
 \title{Convert a given output csv file to a shapefile.}
 \usage{
 processFile(shapefile, csvfile, description, outputFile = NULL,
-  convertList = NULL)
+  convertList = NULL, summarize = sum)
 }
 \arguments{
 \item{csvfile}{l The output csv file to be exported.}
@@ -17,6 +17,10 @@ processFile(shapefile, csvfile, description, outputFile = NULL,
 \item{convertList}{A list whose indexes are attribute values from the csv file and whose
 values are going to replace the attribute values from the csv file. Both attributes and
 values must be string.}
+
+\item{summarize}{A function to be used to join values with the same ID and attributes
+to be joinded. As default, it will use sum, but it is possible to use functions such as
+average.}
 
 \item{datafile}{Name of the input shapefile. This file must be created using getCR,
 getLU, or getSimU.}
