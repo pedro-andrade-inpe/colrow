@@ -1,7 +1,7 @@
 ---
 title: 'colrow: Handling SimU, CR, and LU data'
 author: "Pedro R. Andrade"
-date: "`r format('24 September 2018')`"
+date: "`r format('25 September 2018')`"
 urlcolor: blue
 output:
   pdf_document:
@@ -76,6 +76,8 @@ plot(sf::st_geometry(myLU),   main = "LU", col ="green"); box()
 
 Finally, save the data to be used by the processing functions. Each of this files
 has a column named `ID` that will be used to match the objects from the CSV data.
+Once these files are saved, it is not necessary to create them again every time
+outputs are processed.
 
 ```{r}
 sf::write_sf(myLU, paste0(country, "LU.shp"))
@@ -104,8 +106,9 @@ result <- colrow::processFile(
 )
 ```
 
-This function automatically ignores all attributes that have only one value. The other
-attributes (except `ID` and `VALUE`) compose the created attribute names. They are
+This function automatically ignores all attributes that have only one value (`COUNTRY`, `ALTI`,
+`SLP`, `SOIL` and `SCENARIO` above). The other
+attributes (except `ID` and `VALUE`) compose the created attribute names (`USE` and `YEAR` above). They are
 concatenated according to their order in the CSV file.
 
 ```{r}
@@ -127,7 +130,7 @@ colrow::processFile(
   "BrazilCR.shp",
   csvfile,
   attributes,
-  "brazilOutput.shp"
+  "brazilLandCompare.shp"
 )
 ```
 
@@ -190,9 +193,11 @@ require(tmap)
 ```
 
 In this example, we will draw the Brazilian Biomes on top of the ColRows. The shapefile
-with this data is stored in file `br_biomes.shp` available within `colrow` package.
+with this data is stored in file `br_biomes.shp` available within `colrow` package. We will
+use CR data from `brazilLandCompare.shp`, created previously in this tutorial.
 
 ```{r}
+brazil <- sf::read_sf("brazilLandCompare.shp")
 biomes <- system.file("extdata/shape", "br_biomes.shp", package = "colrow") %>% sf::read_sf()
 ```
 
@@ -202,7 +207,7 @@ choose the cuts to represent the intervals of each slice. In the code below, as 
 seven cuts, we need to define six colors.
 
 ```{r}
-max(result$GrsLnd2010)
+max(brazil$GrsLnd2010)
 
 cuts <- c(0, 50, 100, 150, 200, 250, 305)
 rdPu <- RColorBrewer::brewer.pal(6, "RdPu")
@@ -211,8 +216,21 @@ rdPu <- RColorBrewer::brewer.pal(6, "RdPu")
 Finally, use `tm_shape()`, `tm_fill()`, and `tm_borders()` to draw the map.
 
 ```{r}
-tm_shape(result) +
+tm_shape(brazil) +
   tm_fill(col = "GrsLnd2010", palette = rdPu, breaks = cuts, title = "Grass 2010") +
+  tm_shape(biomes) +
+  tm_borders(lwd = 1, col = "black")
+```
+
+If you want to zoom in the map to a given region, it is possible to set a `bbox` to
+the `tm_shape()`:
+
+```{r}
+amazCerradoBox <- c(xmin = -74.5, xmax = -41.4, ymin = -25, ymax = 5.5) %>%
+  sf::st_bbox(crs = st_crs(4326))
+
+tm_shape(brazil, bbox = amazCerradoBox) +
+  tm_fill(col = "GrsLnd2010", palette = rdPu, title = "Grass 2010") +
   tm_shape(biomes) +
   tm_borders(lwd = 1, col = "black")
 ```
