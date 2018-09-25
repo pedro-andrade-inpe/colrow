@@ -165,6 +165,22 @@ colrow::processFile(
 )
 ```
 
+Sometimes there are more than one `VALUE` per unique `ID`, for each unique combination of
+attributes. In this case, it is necessary to transform all the values into one single result.
+As default, `processFile()` sums all the values, but it is possible to use any other function
+passed as argument, such as `mean()`. Note that `sum()` is used for absolute values and
+`mean()` for averages. To use another function, use argument `aggregate`, passing a 
+function as value, as shown in the example below.
+
+```{r}
+result <- colrow::processFile(
+  "BrazilCR.shp",
+  system.file("extdata/csv/YIELD_COMPARE2.CSV", package = "colrow"),
+  colrow::attrs(ID, CROP, ScenYear, VALUE),
+  aggregate = sum # default value, could be omitted
+)
+```
+
 # Plotting outputs
 
 The example of plotting in this section uses `tmap` package.
