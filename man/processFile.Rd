@@ -5,7 +5,7 @@
 \title{Convert a given output csv file to a shapefile.}
 \usage{
 processFile(shapefile, csvfile, description, outputFile = NULL,
-  convertList = NULL, aggregate = sum)
+  convertList = NULL, aggregate = sum, toAggregate = NULL)
 }
 \arguments{
 \item{csvfile}{l The output csv file to be exported.}
@@ -21,6 +21,9 @@ values must be string.}
 \item{aggregate}{A function to be used to join values with the same ID and attributes
 to be joinded. As default, it will use sum, but it is possible to use functions such as
 average.}
+
+\item{toAggregate}{Attributes to be used only to aggregate, ignoring their values in
+the created attribute names.}
 
 \item{datafile}{Name of the input shapefile. This file must be created using getCR,
 getLU, or getSimU.}

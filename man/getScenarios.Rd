@@ -10,6 +10,7 @@ getScenarios(directory)
 \item{directory}{Name of the directory}
 }
 \description{
-This function returns the scenarios of a given directory.
+This function returns the scenarios of a given directory. Each
+scenario is stored as a
 It removes the directory "results" from the list if it exists.
 }
