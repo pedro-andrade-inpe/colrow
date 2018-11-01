@@ -29,8 +29,10 @@ readCSV <- function(csvfile, product){
 #' @param aggregate A function to be used to join values with the same ID and attributes
 #' to be joinded. As default, it will use sum, but it is possible to use functions such as
 #' average.
+#' @param toAggregate Attributes to be used only to aggregate, ignoring their values in
+#' the created attribute names.
 #' @export
-processFile <- function(shapefile, csvfile, description, outputFile = NULL, convertList = NULL, aggregate = sum){
+processFile <- function(shapefile, csvfile, description, outputFile = NULL, convertList = NULL, aggregate = sum, toAggregate = NULL) {
   cat(paste0("Reading shapefile: ", shapefile, "\n"))
   shp <- sf::read_sf(shapefile)
 
@@ -66,7 +68,7 @@ processFile <- function(shapefile, csvfile, description, outputFile = NULL, conv
   removed <- names(counts)[removePos]
   cat(paste0("Ignored attributes: ", paste(removed, collapse = ", "), "\n"))
 
-  toBeJoined <- dplyr::setdiff(names(counts), c(removed, "ID", "VALUE"))
+  toBeJoined <- dplyr::setdiff(names(counts), c(removed, "ID", "VALUE", toAggregate))
 
   cat(paste0("Attributes to be joined: ", paste(toBeJoined, collapse = ", "), "\n"))
 
