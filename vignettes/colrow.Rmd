@@ -23,6 +23,10 @@ start, it is necessary to install the package from GitHub.
 devtools::install_github("pedro-andrade-inpe/colrow")
 ```
 
+If the package will be installed in a Linux machine, it is necessary to
+manually install some dependencies. Please visit the [webpage of the
+package](http://www.github.com/pedro-andrade-inpe/colrow) in GitHub for more details.
+
 # Creating shapefiles for a given country
 
 First load the package.
