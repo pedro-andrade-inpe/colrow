@@ -12,7 +12,7 @@ devtools::install_github("pedro-andrade-inpe/colrow")
 
 ### Instructions to install in Linux
 
-Install libgit2-dev (for devtools) and libudunits2-dev (for sf):
+Install libgit2-dev (for devtools), libudunits2-dev (for sf), and libcairo2-dev (for tmap):
 
 ```bash
 apt-get install libgit2-dev libudunits2-dev libcairo2-dev
