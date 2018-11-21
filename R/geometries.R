@@ -72,15 +72,17 @@ getSimU <- function(countryName, dataDirectory, join = TRUE){
   simuCountry <- simuCountry %>%
     dplyr::filter(COUNTRY == countryNumber) %>%
     dplyr::filter(SimUID != 0) %>%
+    tidyr::separate("Grd30", c("X", "Y")) %>%
+    dplyr::mutate(ColRow = paste0("CR", X, Y)) %>%
     dplyr::mutate(ID = SimUID) %>%
-    dplyr::select(ID, Grd30)
+    dplyr::select(ID, ColRow)
 
   if(join){
     cat(crayon::green("Joining SimUs\n"))
 
     simuCountry <- simuCountry %>%
       dplyr::group_by(ID) %>%
-      dplyr::summarise()
+      dplyr::summarise(ColRow = ColRow[1])
   }
 
   simuCountry
@@ -93,7 +95,7 @@ getSimU <- function(countryName, dataDirectory, join = TRUE){
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
 #' @export
 getLU <- function(countryName, dataDirectory){
-  res <- colrow::getSimU(countryName, dataDirectory)
+  res <- colrow::getSimU(countryName, dataDirectory, FALSE)
   cat(crayon::green("Mapping SimU to LU\n"))
 
   lusimu <- LU2SimU()
@@ -134,11 +136,8 @@ getCountries <- function(dataDirectory){
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
 #' @export
 getCR <- function(countryName, dataDirectory){
-  res <- getSimU(countryName, dataDirectory)
+  res <- getSimU(countryName, dataDirectory, FALSE)
   cat(crayon::green("Mapping SimU to CR\n"))
-
-  res <- res %>% tidyr::separate("Grd30", c("X", "Y")) %>%
-    dplyr::mutate(ColRow = paste0("CR", X, Y))
 
   countryCR <- maptools::unionSpatialPolygons(sf::as_Spatial(res), res$ColRow)
   ids <- row.names(countryCR)
