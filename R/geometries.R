@@ -36,8 +36,10 @@ LU2SimU <- function(){
 #' @param countryName Name of the country.
 #' @param dataDirectory Directory where input data is located. This directory needs to have
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
+#' @param join Should all SimuS with the same ID be represented together as a single MultiPolygon?
+#' The default value is true.
 #' @export
-getSimU <- function(countryName, dataDirectory){
+getSimU <- function(countryName, dataDirectory, join = TRUE){
   cat(crayon::green("Reading all countries\n"))
 
   countries <- sf::read_sf(paste0(dataDirectory, "g2006_2.shp")) %>% sf::st_set_crs(4326)
@@ -67,11 +69,21 @@ getSimU <- function(countryName, dataDirectory){
 
   countryNumber <- simuCountry$COUNTRY %>% table() %>% which.max() %>% names() %>% as.numeric()
 
-  simuCountry %>%
+  simuCountry <- simuCountry %>%
     dplyr::filter(COUNTRY == countryNumber) %>%
     dplyr::filter(SimUID != 0) %>%
     dplyr::mutate(ID = SimUID) %>%
     dplyr::select(ID, Grd30)
+
+  if(join){
+    cat(crayon::green("Joining SimUs\n"))
+
+    simuCountry <- simuCountry %>%
+      dplyr::group_by(ID) %>%
+      dplyr::summarise()
+  }
+
+  simuCountry
 }
 
 #' @title Return LU geometries for a given country.
