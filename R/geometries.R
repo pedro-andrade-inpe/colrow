@@ -130,7 +130,8 @@ getCountries <- function(dataDirectory){
 }
 
 #' @title Return CR geometries for a given country.
-#' @description Return all ColRows of a given country as a simple feature.
+#' @description Return all ColRows of a given country as a set of simple feature
+#' polygons, using the geometries of their respective SimUs.
 #' @param countryName Name of the country.
 #' @param dataDirectory Directory where input data is located. This directory needs to have
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
@@ -146,4 +147,35 @@ getCR <- function(countryName, dataDirectory){
   countryCR$ID <- ids
 
   countryCR
+}
+
+#' @title Return CR centroids for a given country.
+#' @description Return all ColRows of a given country as a set of simple feature points.
+#' @param countryName Name of the country.
+#' @param dataDirectory Directory where input data is located. This directory needs to have
+#' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
+#' @export
+getCRcentroids <- function(countryName, dataDirectory){
+  myCR <- colrow::getCR(countryName, dataDirectory)
+
+  cat(crayon::green("Reading CR centroids\n"))
+
+  CRpoints <- sf::read_sf(paste0(dataDirectory, "COLROW30.shp")) %>% sf::st_set_crs(4326)
+
+  CRvalueToID <- function(value){
+    vs <- strsplit(value, " - ")
+    v1 <- vs[[1]][1] %>% stringr::str_pad(3, pad = "0")
+    v2 <- vs[[1]][2] %>% stringr::str_pad(3, pad = "0")
+    paste0("CR", v1, v2)
+  }
+
+  cat(crayon::green("Generating CR IDs\n"))
+
+  CRpoints$ID <- sapply(CRpoints$COLROW30, CRvalueToID)
+
+  cat(crayon::green("Subsetting CR centroids\n"))
+
+  result <- CRpoints[CRpoints$ID %in% myCR$ID, ]
+  result$RealArea_m <- NULL
+  return(result)
 }
