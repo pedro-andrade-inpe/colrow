@@ -13,7 +13,7 @@
 #' @export
 equalSteps <- function(min = NULL, max = NULL, slices, data = NULL){
   if(!is.null(data)){
-    values = as.data.frame(data)[,1]
+    values <- as.data.frame(data)[,1]
 
     if(!is.null(max)) stop("Cannot use 'max' and 'data' at the same time.")
     if(!is.null(min)) stop("Cannot use 'min' and 'data' at the same time.")

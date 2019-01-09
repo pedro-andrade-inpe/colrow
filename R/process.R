@@ -18,10 +18,10 @@ readCSV <- function(csvfile, product){
 
 #' @title Convert a given output csv file to a shapefile.
 #' @description Process a fiven csv and convert it to a shapefile.
-#' @param datafile Name of the input shapefile. This file must be created using getCR,
+#' @param shapefile Name of the input shapefile. This file must be created using getCR,
 #' getLU, or getSimU.
 #' @param csvfile l The output csv file to be exported.
-#' @param outputFile Name of the shapefile to be saved.
+#' @param outputfile Name of the shapefile to be saved.
 #' @param description A vector of strings with the attribute names.
 #' @param convertList A list whose indexes are attribute values from the csv file and whose
 #' values are going to replace the attribute values from the csv file. Both attributes and
@@ -32,7 +32,7 @@ readCSV <- function(csvfile, product){
 #' @param toAggregate Attributes to be used only to aggregate, ignoring their values in
 #' the created attribute names.
 #' @export
-processFile <- function(shapefile, csvfile, description, outputFile = NULL, convertList = NULL, aggregate = sum, toAggregate = NULL) {
+processFile <- function(shapefile, csvfile, description, outputfile = NULL, convertList = NULL, aggregate = sum, toAggregate = NULL) {
   cat(paste0("Reading shapefile: ", shapefile, "\n"))
   shp <- sf::read_sf(shapefile)
 
@@ -80,7 +80,7 @@ processFile <- function(shapefile, csvfile, description, outputFile = NULL, conv
 
   result <- dplyr::select(data, -removePos) %>%
     tidyr::unite(KEY, toBeJoined, sep = "") %>%
-    dplyr::group_by(ID, KEY) %>%
+    dplyr::group_by_("ID", "KEY") %>%
     dplyr::summarise(VALUE = aggregate(VALUE)) %>%
     tidyr::spread(key = KEY, VALUE)
 
@@ -97,11 +97,11 @@ processFile <- function(shapefile, csvfile, description, outputFile = NULL, conv
     output[is.na(output)] <- 0
   }
 
-  if(is.null(outputFile))
+  if(is.null(outputfile))
      return(output)
   else{
     cat(paste0("Renaming attributes according to convertList\n"))
-    mynames = names(output)
+    mynames <- names(output)
 
     for(name in names(convertList)){
       mynames <- stringr::str_replace_all(mynames, name, convertList[[name]])
@@ -121,8 +121,8 @@ processFile <- function(shapefile, csvfile, description, outputFile = NULL, conv
     else
       cat(paste0("No attribute has more than 10 characters\n"))
 
-    cat(paste0("Writing output file: ", outputFile), "\n")
-    sf::write_sf(output, outputFile, delete_layer = TRUE)
+    cat(paste0("Writing output file: ", outputfile), "\n")
+    sf::write_sf(output, outputfile, delete_layer = TRUE)
   }
 }
 
@@ -133,6 +133,7 @@ processScenario <- function(shapefile, scenario, output){
 
   cat(paste0("Writing file '", basename(scenario), ".shp'\n"))
 
+  # FIXME use sf instead
   rgdal::writeOGR(shp, output, basename(scenario), driver = "ESRI Shapefile", overwrite_layer = TRUE)
 }
 
@@ -163,14 +164,15 @@ getScenarios <- function(directory){
 #' output will be in the same directory where the scenarios are stored.
 #' @export
 processDirectory <- function(shapefile, directory, output = directory){
-  output = paste0(output, "/results")
+  output <- paste0(output, "/results")
   dir.create(output, showWarnings = FALSE)
 
   output <- normalizePath(output)
   directory <- normalizePath(directory)
   scenarios <- getScenarios(directory)
 
-  if(length(scenarios) == 0) stop(paste0("Could not find any scenario in directory '", directory, "'"))
+  if(length(scenarios) == 0)
+    stop(paste0("Could not find any scenario in directory '", directory, "'"))
 
   for(scenario in scenarios){
     cat(paste0("Processing scenario '", basename(scenario), "'\n"))

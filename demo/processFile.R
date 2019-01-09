@@ -20,12 +20,11 @@ result <- colrow::processFile(
 data <- sf::as_Spatial(result)
 
 require(rgdal)
-require(RColorBrewer)
 
-biomes    <- system.file("extdata/shape", "br_biomes.shp",      package = "colrow") %>% readOGR()
-biomessp   <- list("sp.polygons", biomes,   fill = "transparent", col = "black", add = TRUE, first = FALSE)
+biomes   <- system.file("extdata/shape", "br_biomes.shp",      package = "colrow") %>% readOGR()
+biomessp <- list("sp.polygons", biomes,   fill = "transparent", col = "black", add = TRUE, first = FALSE)
 
-ylGn <- brewer.pal(7, "RdPu")
+ylGn <- RColorBrewer::brewer.pal(7, "RdPu")
 
 cuts <-c (0, 1, 2, 3, 4, 5, 6, 7)
 

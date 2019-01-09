@@ -22,4 +22,3 @@ tm_shape(result, bbox = amazCerradoBox) +
   tm_fill(col = "Corn2010", palette = rdPu, title = "Corn 2020") +
   tm_shape(biomes) +
   tm_borders(lwd = 1, col = "black")
-

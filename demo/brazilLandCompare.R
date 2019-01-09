@@ -1,6 +1,13 @@
 
 require(tmap)
 
+dataDirectory <- "c:/Users/pedro/Dropbox/colrow/"
+countryName <- "Brazil"
+
+cr <- colrow::getCR(countryName, dataDirectory)
+
+sf::write_sf(cr, "BrazilCR.shp")
+
 result <- colrow::processFile(
   "BrazilCR.shp",
   system.file("extdata/scenarios/FC/Land_Compare3_FC.csv", package = "colrow"),

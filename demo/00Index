@@ -1,3 +1,10 @@
-scenarios    Create shapefiles from the output of scenarios
-spplot       Plot attribute values using shapefiles exported from scenarios
-
+brazilLandCompare       Plot a map of grassland from the result of a simulation for Brazil.
+brazilYieldCompare      Plot a map of corn from the result of a simulation for Brazil.
+colombiaLandCompareLU   Process a shapefile with the result of a simulation for Colombia.
+csvPlotByYear           Plot the area of different uses by year.
+saveCRasCSVtoEPIC       Save Brazil CR data as a CSV to be used by EPIC.
+convert_pdf_jpeg        Convert all files in a directory from pdf to jpeg format.
+cropDataCompare         Process a file and plot using tmap.
+processFile             Example of processing a file and using spplot.
+representations         Creating SimU, CR, and LU data for Brazil.
+spplot                  Creating maps using spplot.

@@ -1,14 +1,16 @@
 Package: colrow
 Type: Package
 Title: Handling SimU, CR, and LU data
-Version: 0.2-0
-Date: 2018-11-21
+Version: 0.2-1
+Date: 2019-01-08
 Authors@R: c(person('Pedro', 'Andrade', role = c('aut', 'cre'), email = 'pedro.andrade@inpe.br'))
 Maintainer: Pedro R. Andrade <pedro.andrade@inpe.br>
 Description: A set of functions to handle SimU, CR, and LU data.
 Depends: R (>= 3.4)
 Encoding: UTF-8
 License: GPL-2 | file LICENSE
+URL: https://github.com/pedro-andrade-inpe/colrow/
+BugReports: https://github.com/pedro-andrade-inpe/colrow/issues
 Imports:
     dplyr,
     sp,
@@ -22,6 +24,15 @@ Imports:
     crayon,
     stringdist,
     magrittr,
+    sf,
+    maptools,
+    stringr,
+    ggplot2,
+    tmap,
+    RColorBrewer
+Suggests:
+    knitr,
+    rmarkdown
 RoxygenNote: 6.1.1
 Collate:
 	'pipe.R'
@@ -30,3 +41,6 @@ Collate:
 	'geometries.R'
 	'slicing.R'
 	'zzz.R'
+VignetteBuilder:
+  knitr,
+  rmarkdown

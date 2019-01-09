@@ -1,13 +1,15 @@
 
 LU2CR <- function(){
-  data <- system.file("extdata/representations/LUtoCR.txt", package = "colrow") %>%
-    read.csv(header = FALSE, as.is = TRUE) %>%
+  luctocrfile <- "extdata/representations/LUtoCR.txt"
+  data <- system.file(luctocrfile, package = "colrow") %>%
+    utils::read.csv(header = FALSE, as.is = TRUE) %>%
     unlist() %>% tibble::tibble()
 
   colnames(data) <- "values"
   data <- data[-dim(data)[1],] # remove the last element, which is ""
 
-  data <- dplyr::mutate(data, values = stringr::str_replace_all(values, " ", "")) %>%
+  data <- data %>%
+    dplyr::mutate(values = stringr::str_replace_all(values, " ", "")) %>%
     tidyr::separate("values", c("LU", "CR")) %>%
     dplyr::group_by_(.dots = "LU") %>%
     dplyr::arrange(.by_group = TRUE)
@@ -18,7 +20,7 @@ LU2CR <- function(){
 ## Map from LU to SimU
 LU2SimU <- function(){
   system.file("extdata/representations/LUtoSimU.txt", package = "colrow") %>%
-    read.csv(header = FALSE, as.is = TRUE) %>%
+    utils::read.csv(header = FALSE, as.is = TRUE) %>%
     unlist() %>%
     tibble::tibble() %>%
     magrittr::set_colnames("values") %>%
@@ -42,19 +44,25 @@ LU2SimU <- function(){
 getSimU <- function(countryName, dataDirectory, join = TRUE){
   cat(crayon::green("Reading all countries\n"))
 
-  countries <- sf::read_sf(paste0(dataDirectory, "g2006_2.shp")) %>% sf::st_set_crs(4326)
+  countries <- sf::read_sf(paste0(dataDirectory, "g2006_2.shp")) %>%
+    sf::st_set_crs(4326)
 
   cat(crayon::green(paste0("Selecting ", countryName, "\n")))
 
   country <- countries %>% dplyr::filter(ADM0_NAME == countryName)
 
   if(dim(country)[1] == 0){
-    distances <- stringdist::stringdist(countryName, countries$ADM0_NAME, method = "dl")
+    distances <- countryName %>%
+      stringdist::stringdist(countries$ADM0_NAME, method = "dl")
 
     suggestions <- unique(countries$ADM0_NAME[which(distances < 3)])
 
     if(length(suggestions) > 0)
-      stop(paste0("Could not find ", countryName, ". Do you mean ", paste(suggestions), "?"))
+      stop(paste0("Could not find ",
+                  countryName,
+                  ". Do you mean ",
+                  paste(suggestions),
+                  "?"))
     else
       stop(paste0("Could not find ", countryName), ".")
   }
@@ -67,7 +75,11 @@ getSimU <- function(countryName, dataDirectory, join = TRUE){
 
   simuCountry <- suppressMessages(simu[country, op = sf::st_intersects])
 
-  countryNumber <- simuCountry$COUNTRY %>% table() %>% which.max() %>% names() %>% as.numeric()
+  countryNumber <- simuCountry$COUNTRY %>%
+    table() %>%
+    which.max() %>%
+    names() %>%
+    as.numeric()
 
   simuCountry <- simuCountry %>%
     dplyr::filter(COUNTRY == countryNumber) %>%
@@ -160,7 +172,8 @@ getCRcentroids <- function(countryName, dataDirectory){
 
   cat(crayon::green("Reading CR centroids\n"))
 
-  CRpoints <- sf::read_sf(paste0(dataDirectory, "COLROW30.shp")) %>% sf::st_set_crs(4326)
+  CRpoints <- sf::read_sf(paste0(dataDirectory, "COLROW30.shp")) %>%
+    sf::st_set_crs(4326)
 
   CRvalueToID <- function(value){
     vs <- strsplit(value, " - ")

@@ -4,15 +4,18 @@
 \alias{processFile}
 \title{Convert a given output csv file to a shapefile.}
 \usage{
-processFile(shapefile, csvfile, description, outputFile = NULL,
+processFile(shapefile, csvfile, description, outputfile = NULL,
   convertList = NULL, aggregate = sum, toAggregate = NULL)
 }
 \arguments{
+\item{shapefile}{Name of the input shapefile. This file must be created using getCR,
+getLU, or getSimU.}
+
 \item{csvfile}{l The output csv file to be exported.}
 
 \item{description}{A vector of strings with the attribute names.}
 
-\item{outputFile}{Name of the shapefile to be saved.}
+\item{outputfile}{Name of the shapefile to be saved.}
 
 \item{convertList}{A list whose indexes are attribute values from the csv file and whose
 values are going to replace the attribute values from the csv file. Both attributes and
@@ -24,9 +27,6 @@ average.}
 
 \item{toAggregate}{Attributes to be used only to aggregate, ignoring their values in
 the created attribute names.}
-
-\item{datafile}{Name of the input shapefile. This file must be created using getCR,
-getLU, or getSimU.}
 }
 \description{
 Process a fiven csv and convert it to a shapefile.

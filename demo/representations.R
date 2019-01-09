@@ -14,9 +14,9 @@ mySimU <- colrow::getSimU(country, data)
 
 par(mfrow = c(1, 3), mar = c(5, 0.1, 5, 0.1))
 
-plot(sf::st_geometry(mySimU), main = "SimU", col = "red"); box()
-plot(sf::st_geometry(myCR),   main = "CR", col = "blue");   box()
-plot(sf::st_geometry(myLU),   main = "LU", col ="green");   box()
+plot(sf::st_geometry(mySimU), main = "SimU", col = "red");  box()
+plot(sf::st_geometry(myCR),   main = "CR",   col = "blue"); box()
+plot(sf::st_geometry(myLU),   main = "LU",   col ="green"); box()
 
 sf::write_sf(myLU, paste0(country, "LU.shp"))
 sf::write_sf(myCR, paste0(country, "CR.shp"))
