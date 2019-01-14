@@ -13,7 +13,8 @@ getLU, or getSimU.}
 
 \item{csvfile}{l The output csv file to be exported.}
 
-\item{description}{A vector of strings with the attribute names.}
+\item{description}{A vector of strings with the attribute names.
+It is possible to use attrs() to help creating this description.}
 
 \item{outputfile}{Name of the shapefile to be saved.}
 

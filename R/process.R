@@ -4,7 +4,12 @@
 #' This function is useful to name the attributes to be read from CSV files.
 #' @param ... Names of the variables.
 #' @export
-attrs <-function(...) paste(substitute(list(...)))[-1]
+attrs <-function(...) {
+  result <- paste(substitute(list(...)))[-1]
+
+  if("VALUE" %in% result) return(result)
+  else stop("There should exist one attribute called 'VALUE'.")
+}
 
 #' @title Read CR from a CSV file to tibble
 #' @description Read a CSV file as a tibble. The column names are identified automatically by
@@ -23,6 +28,7 @@ readCSV <- function(csvfile, product){
 #' @param csvfile l The output csv file to be exported.
 #' @param outputfile Name of the shapefile to be saved.
 #' @param description A vector of strings with the attribute names.
+#' It is possible to use attrs() to help creating this description.
 #' @param convertList A list whose indexes are attribute values from the csv file and whose
 #' values are going to replace the attribute values from the csv file. Both attributes and
 #' values must be string.
@@ -33,6 +39,8 @@ readCSV <- function(csvfile, product){
 #' the created attribute names.
 #' @export
 processFile <- function(shapefile, csvfile, description, outputfile = NULL, convertList = NULL, aggregate = sum, toAggregate = NULL) {
+  if(class(description) != "character") stop(paste0("Argument 'description' should be 'character', got '", class(description), "'."))
+
   cat(paste0("Reading shapefile: ", shapefile, "\n"))
   shp <- sf::read_sf(shapefile)
 
