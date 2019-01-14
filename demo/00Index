@@ -8,3 +8,4 @@ cropDataCompare         Process a file and plot using tmap.
 processFile             Example of processing a file and using spplot.
 representations         Creating SimU, CR, and LU data for Brazil.
 spplot                  Creating maps using spplot.
+plotTwoCountries        Plot two countries together.
