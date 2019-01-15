@@ -105,8 +105,20 @@ getSimU <- function(countryName, dataDirectory, join = TRUE){
 #' @param countryName Name of the country.
 #' @param dataDirectory Directory where input data is located. This directory needs to have
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
+#' @param cache If true (default), use the LUs precomputed.
+#' Otherwise, it will compute from the original data.
 #' @export
-getLU <- function(countryName, dataDirectory){
+getLU <- function(countryName, dataDirectory, cache = TRUE){
+  if(cache){
+    cat(crayon::green(paste0("Loading cached version of LU data for ", countryName, "\n")))
+
+    result <- sf::read_sf(paste0(dataDirectory, "worldLU.shp")) %>%
+      sf::st_set_crs(4326) %>%
+      dplyr::filter(Country == countryName)
+
+    return(result)
+  }
+
   res <- colrow::getSimU(countryName, dataDirectory, FALSE)
 
   if(dim(res)[1] == 0) return(NULL)
@@ -150,8 +162,20 @@ getCountries <- function(dataDirectory){
 #' @param countryName Name of the country.
 #' @param dataDirectory Directory where input data is located. This directory needs to have
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
+#' @param cache If true (default), use the LUs precomputed.
+#' Otherwise, it will compute from the original data.
 #' @export
-getCR <- function(countryName, dataDirectory){
+getCR <- function(countryName, dataDirectory, cache = TRUE){
+  if(cache){
+    cat(crayon::green(paste0("Loading cached version of CR data for ", countryName, "\n")))
+
+    result <- sf::read_sf(paste0(dataDirectory, "worldCR.shp")) %>%
+      sf::st_set_crs(4326) %>%
+      dplyr::filter(Country == countryName)
+
+    return(result)
+  }
+
   res <- getSimU(countryName, dataDirectory, FALSE)
 
   if(dim(res)[1] == 0) return(NULL)
