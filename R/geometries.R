@@ -35,36 +35,49 @@ LU2SimU <- function(){
 
 #' @title Return SimU geometries for a given country.
 #' @description Return all Simulation Units of a given country as a simple feature.
-#' @param countryName Name of the country.
+#' @param countryNames Names of the countries as a string vector. It can have one or more values.
 #' @param dataDirectory Directory where input data is located. This directory needs to have
 #' files available at https://bit.ly/2RrgZi9 (shortened from https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0).
 #' @param join Should all SimuS with the same ID be represented together as a single MultiPolygon?
 #' The default value is true.
 #' @export
-getSimU <- function(countryName, dataDirectory, join = TRUE){
+getSimU <- function(countryNames, dataDirectory, join = TRUE){
+  if(length(countryNames) > 1){
+    result <- getSimU(countryNames[1], dataDirectory)
+    result$Country <- countryNames[1]
+
+    for(i in 2:length(countryNames)){
+      country <- getSimU(countryNames[i], dataDirectory)
+      country$Country <- countryNames[i]
+      result <- rbind(result, country)
+    }
+
+    return(result)
+  }
+
   cat(crayon::green("Reading all countries\n"))
 
   countries <- sf::read_sf(paste0(dataDirectory, "g2006_2.shp")) %>%
     sf::st_set_crs(4326)
 
-  cat(crayon::green(paste0("Selecting ", countryName, "\n")))
+  cat(crayon::green(paste0("Selecting ", countryNames, "\n")))
 
-  country <- countries %>% dplyr::filter(ADM0_NAME == countryName)
+  country <- countries %>% dplyr::filter(ADM0_NAME == countryNames)
 
   if(dim(country)[1] == 0){
-    distances <- countryName %>%
+    distances <- countryNames %>%
       stringdist::stringdist(countries$ADM0_NAME, method = "dl")
 
     suggestions <- unique(countries$ADM0_NAME[which(distances < 3)])
 
     if(length(suggestions) > 0)
       stop(paste0("Could not find ",
-                  countryName,
+                  countryNames,
                   ". Do you mean ",
                   paste(suggestions),
                   "?"))
     else
-      stop(paste0("Could not find ", countryName), ".")
+      stop(paste0("Could not find ", countryNames), ".")
   }
 
   cat(crayon::green("Reading all SimUs\n"))
@@ -102,24 +115,34 @@ getSimU <- function(countryName, dataDirectory, join = TRUE){
 
 #' @title Return LU geometries for a given country.
 #' @description Return all Large Units of a given country as a simple feature.
-#' @param countryName Name of the country.
+#' @param countryNames Names of the countries as a string vector. It can have one or more values.
 #' @param dataDirectory Directory where input data is located. This directory needs to have
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
 #' @param cache If true (default), use the LUs precomputed.
 #' Otherwise, it will compute from the original data.
 #' @export
-getLU <- function(countryName, dataDirectory, cache = TRUE){
-  if(cache){
-    cat(crayon::green(paste0("Loading cached version of LU data for ", countryName, "\n")))
+getLU <- function(countryNames, dataDirectory, cache = TRUE){
+  if(length(countryNames) > 1){
+    result <- getLU(countryNames[1], dataDirectory, cache)
 
-    result <- sf::read_sf(paste0(dataDirectory, "worldLU.shp")) %>%
-      sf::st_set_crs(4326) %>%
-      dplyr::filter(Country == countryName)
+    for(i in 2:length(countryNames)){
+      result <- rbind(result, getLU(countryNames[i], dataDirectory, cache))
+    }
 
     return(result)
   }
 
-  res <- colrow::getSimU(countryName, dataDirectory, FALSE)
+  if(cache){
+    cat(crayon::green(paste0("Loading cached version of LU data for ", countryNames, "\n")))
+
+    result <- sf::read_sf(paste0(dataDirectory, "worldLU.shp")) %>%
+      sf::st_set_crs(4326) %>%
+      dplyr::filter(Country == countryNames)
+
+    return(result)
+  }
+
+  res <- colrow::getSimU(countryNames, dataDirectory, FALSE)
 
   if(dim(res)[1] == 0) return(NULL)
 
@@ -159,24 +182,34 @@ getCountries <- function(dataDirectory){
 #' @title Return CR geometries for a given country.
 #' @description Return all ColRows of a given country as a set of simple feature
 #' polygons, using the geometries of their respective SimUs.
-#' @param countryName Name of the country.
+#' @param countryNames Names of the countries as a string vector. It can have one or more values.
 #' @param dataDirectory Directory where input data is located. This directory needs to have
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
 #' @param cache If true (default), use the LUs precomputed.
 #' Otherwise, it will compute from the original data.
 #' @export
-getCR <- function(countryName, dataDirectory, cache = TRUE){
-  if(cache){
-    cat(crayon::green(paste0("Loading cached version of CR data for ", countryName, "\n")))
+getCR <- function(countryNames, dataDirectory, cache = TRUE){
+  if(length(countryNames) > 1){
+    result <- getCR(countryNames[1], dataDirectory, cache)
 
-    result <- sf::read_sf(paste0(dataDirectory, "worldCR.shp")) %>%
-      sf::st_set_crs(4326) %>%
-      dplyr::filter(Country == countryName)
+    for(i in 2:length(countryNames)){
+      result <- rbind(result, getCR(countryNames[i], dataDirectory, cache))
+    }
 
     return(result)
   }
 
-  res <- getSimU(countryName, dataDirectory, FALSE)
+  if(cache){
+    cat(crayon::green(paste0("Loading cached version of CR data for ", countryNames, "\n")))
+
+    result <- sf::read_sf(paste0(dataDirectory, "worldCR.shp")) %>%
+      sf::st_set_crs(4326) %>%
+      dplyr::filter(Country == countryNames)
+
+    return(result)
+  }
+
+  res <- getSimU(countryNames, dataDirectory, FALSE)
 
   if(dim(res)[1] == 0) return(NULL)
 
@@ -193,12 +226,12 @@ getCR <- function(countryName, dataDirectory, cache = TRUE){
 
 #' @title Return CR centroids for a given country.
 #' @description Return all ColRows of a given country as a set of simple feature points.
-#' @param countryName Name of the country.
+#' @param countryNames Name of the country.
 #' @param dataDirectory Directory where input data is located. This directory needs to have
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
 #' @export
-getCRcentroids <- function(countryName, dataDirectory){
-  myCR <- colrow::getCR(countryName, dataDirectory)
+getCRcentroids <- function(countryNames, dataDirectory){
+  myCR <- colrow::getCR(countryNames, dataDirectory)
 
   cat(crayon::green("Reading CR centroids\n"))
 

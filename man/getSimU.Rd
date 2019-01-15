@@ -4,13 +4,13 @@
 \alias{getSimU}
 \title{Return SimU geometries for a given country.}
 \usage{
-getSimU(countryName, dataDirectory, join = TRUE)
+getSimU(countryNames, dataDirectory, join = TRUE)
 }
 \arguments{
-\item{countryName}{Name of the country.}
+\item{countryNames}{Names of the countries as a string vector. It can have one or more values.}
 
 \item{dataDirectory}{Directory where input data is located. This directory needs to have
-files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.}
+files available at https://bit.ly/2RrgZi9 (shortened from https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0).}
 
 \item{join}{Should all SimuS with the same ID be represented together as a single MultiPolygon?
 The default value is true.}

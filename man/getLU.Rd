@@ -4,13 +4,16 @@
 \alias{getLU}
 \title{Return LU geometries for a given country.}
 \usage{
-getLU(countryName, dataDirectory)
+getLU(countryNames, dataDirectory, cache = TRUE)
 }
 \arguments{
-\item{countryName}{Name of the country.}
+\item{countryNames}{Names of the countries as a string vector. It can have one or more values.}
 
 \item{dataDirectory}{Directory where input data is located. This directory needs to have
 files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.}
+
+\item{cache}{If true (default), use the LUs precomputed.
+Otherwise, it will compute from the original data.}
 }
 \description{
 Return all Large Units of a given country as a simple feature.

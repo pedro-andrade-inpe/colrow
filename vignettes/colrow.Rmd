@@ -1,7 +1,7 @@
 ---
 title: 'colrow: Handling SimU, CR, and LU data'
 author: "Pedro R. Andrade"
-date: "`r format('11 January 2019')`"
+date: "`r format('15 January 2019')`"
 urlcolor: blue
 output:
   pdf_document:
@@ -89,6 +89,27 @@ outputs are processed.
 sf::write_sf(myLU, paste0(country, "LU.shp"))
 sf::write_sf(myCR, paste0(country, "CR.shp"))
 sf::write_sf(mySimU, paste0(country, "SimU.shp"))
+```
+
+# Several countries together
+
+The same functions above can be used to get several countries together. Just use the
+names of the countries as a string vector for the first argument. For example, the code
+below gets LU data for all nine countries of the Amazon basin.
+This and several examples of plotting in this tutorial use `tmap` package.
+
+```{r}
+require(tmap)
+
+amazon <- c("Brazil", "Peru", "Colombia", "Venezuela",
+            "Ecuador", "Bolivia", "Guyana",
+            "Suriname", "French Guiana")
+
+lu <- colrow::getLU(amazon, dataDir)
+
+tm_shape(lu) +
+  tm_fill(col ="Country") +
+  tm_borders(lwd = 1, col = "black")
 ```
 
 # Processing outputs
@@ -192,13 +213,8 @@ result <- colrow::processFile(
 
 # Plotting outputs
 
-The example of plotting in this section uses `tmap` package.
-
-```{r}
-require(tmap)
-```
-
-In this example, we will draw the Brazilian Biomes on top of the ColRows. The shapefile
+To plot the outputs created above, first we will draw the Brazilian Biomes on top
+of the ColRows. The shapefile
 with this data is stored in file `br_biomes.shp` available within `colrow` package. We will
 use CR data from `brazilLandCompare.shp`, created previously in this tutorial.
 

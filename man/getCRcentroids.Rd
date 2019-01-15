@@ -4,10 +4,10 @@
 \alias{getCRcentroids}
 \title{Return CR centroids for a given country.}
 \usage{
-getCRcentroids(countryName, dataDirectory)
+getCRcentroids(countryNames, dataDirectory)
 }
 \arguments{
-\item{countryName}{Name of the country.}
+\item{countryNames}{Name of the country.}
 
 \item{dataDirectory}{Directory where input data is located. This directory needs to have
 files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.}
