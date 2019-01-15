@@ -1,4 +1,23 @@
 
+checkVersion = function(directory){
+  mfile <- paste0(directory, "/version.txt")
+  outdatedMessage <- "Outdated data directory. Please download a new version from https://bit.ly/2RrgZi9"
+  if(file.exists(mfile)){
+    con <- file(mfile, "r")
+    line <- readLines(con, n = 1)
+    close(con)
+
+    if(line != "0.1")
+      stop(outdatedMessage)
+  }
+  else{
+    if(file.exists(paste0(directory, "/COLROW30.shp")))
+      stop(outdatedMessage)
+    else
+      stop("Invalid data directory")
+  }
+}
+
 LU2CR <- function(){
   luctocrfile <- "extdata/representations/LUtoCR.txt"
   data <- system.file(luctocrfile, package = "colrow") %>%
@@ -55,6 +74,7 @@ getSimU <- function(countryNames, dataDirectory, join = TRUE){
     return(result)
   }
 
+  checkVersion(dataDirectory)
   cat(crayon::green("Reading all countries\n"))
 
   countries <- sf::read_sf(paste0(dataDirectory, "g2006_2.shp")) %>%
@@ -132,6 +152,8 @@ getLU <- function(countryNames, dataDirectory, cache = TRUE){
     return(result)
   }
 
+  checkVersion(dataDirectory)
+
   if(cache){
     cat(crayon::green(paste0("Loading cached version of LU data for ", countryNames, "\n")))
 
@@ -198,6 +220,8 @@ getCR <- function(countryNames, dataDirectory, cache = TRUE){
 
     return(result)
   }
+
+  checkVersion(dataDirectory)
 
   if(cache){
     cat(crayon::green(paste0("Loading cached version of CR data for ", countryNames, "\n")))
