@@ -37,7 +37,7 @@ LU2SimU <- function(){
 #' @description Return all Simulation Units of a given country as a simple feature.
 #' @param countryName Name of the country.
 #' @param dataDirectory Directory where input data is located. This directory needs to have
-#' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
+#' files available at https://bit.ly/2RrgZi9 (shortened from https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0).
 #' @param join Should all SimuS with the same ID be represented together as a single MultiPolygon?
 #' The default value is true.
 #' @export
@@ -108,6 +108,9 @@ getSimU <- function(countryName, dataDirectory, join = TRUE){
 #' @export
 getLU <- function(countryName, dataDirectory){
   res <- colrow::getSimU(countryName, dataDirectory, FALSE)
+
+  if(dim(res)[1] == 0) return(NULL)
+
   cat(crayon::green("Mapping SimU to LU\n"))
 
   lusimu <- LU2SimU()
@@ -150,6 +153,9 @@ getCountries <- function(dataDirectory){
 #' @export
 getCR <- function(countryName, dataDirectory){
   res <- getSimU(countryName, dataDirectory, FALSE)
+
+  if(dim(res)[1] == 0) return(NULL)
+
   cat(crayon::green("Mapping SimU to CR\n"))
 
   countryCR <- maptools::unionSpatialPolygons(sf::as_Spatial(res), res$ColRow)
