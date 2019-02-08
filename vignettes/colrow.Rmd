@@ -1,7 +1,7 @@
 ---
 title: 'colrow: Handling SimU, CR, and LU data'
 author: "Pedro R. Andrade"
-date: "`r format('17 January 2019')`"
+date: "`r format('8 February 2019')`"
 urlcolor: blue
 output:
   pdf_document:
@@ -271,17 +271,16 @@ tm_shape(brazil, bbox = amazCerradoBox) +
   tm_borders(lwd = 1, col = "black")
 ```
 
-If you want to save this plot or any other created within R into a file, use functions such as `pdf()`, `jpeg()`, `png()`, `tiff()` before plotting and `dev.off()` afterwards. For example, the following code will create file `amz-cerrado.png` in the current directory to save the plot above.
+If you want to save this plot or any other created within R into a file, it is
+necessary to store the plot into a variable and then call `tmap_save()`. For example, the following code creates variable `result` storing the same map created above and then saves it into file `amz-cerrado.png` in the current directory.
 
 ```{r}
-png("amaz-cerrado.png")
-
-tm_shape(brazil, bbox = amazCerradoBox) +
+result <- tm_shape(brazil, bbox = amazCerradoBox) +
   tm_fill(col = "GrsLnd2010", palette = rdPu, title = "Grass 2010") +
   tm_shape(biomes) +
   tm_borders(lwd = 1, col = "black")
 
-dev.off()
+tmap_save(result, "amaz-cerrado.png")
 ```
 
 # Handling csv files
