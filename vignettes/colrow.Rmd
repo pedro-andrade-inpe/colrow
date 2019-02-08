@@ -283,6 +283,20 @@ result <- tm_shape(brazil, bbox = amazCerradoBox) +
 tmap_save(result, "amaz-cerrado.png")
 ```
 
+It is also possible to create several maps using `plotAll()`. This function
+automatically uses all the values of several attributes with the same prefix
+in order to define a common legend. The following code creates six pdf files,
+each one plotting grassland from 2000 to 2050.
+
+```{r}
+require(tmap)
+
+plotAll(brazil, "GrsLnd", palette = "RdPu", title = "Grass", additional =     
+  tm_shape(biomes) +
+  tm_borders(lwd = 1, col = "black")
+)
+```
+
 # Handling csv files
 
 You can handle csv files directly to create charts or to compute values without

@@ -1,8 +1,8 @@
 Package: colrow
 Type: Package
 Title: Handling SimU, CR, and LU data
-Version: 0.3-0
-Date: 2019-01-15
+Version: 0.3-1
+Date: 2019-02-08
 Authors@R: c(person('Pedro', 'Andrade', role = c('aut', 'cre'), email = 'pedro.andrade@inpe.br'))
 Maintainer: Pedro R. Andrade <pedro.andrade@inpe.br>
 Description: A set of functions to handle SimU, CR, and LU data.
@@ -41,6 +41,7 @@ Collate:
 	'rename.R'
 	'geometries.R'
 	'slicing.R'
+	'plot.R'
 	'zzz.R'
 VignetteBuilder:
   knitr,
