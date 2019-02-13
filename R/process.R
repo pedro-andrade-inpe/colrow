@@ -49,6 +49,9 @@ processFile <- function(shapefile, csvfile, description, outputfile = NULL, conv
   data <- readCSV(csvfile, product = description)
 
   # message when the amount of objects do not match the shp file
+  shp$ID <- as.character(shp$ID)
+  data$ID <- as.character(data$ID)
+
   shpid <- shp$ID
   dataid <- data$ID
 
