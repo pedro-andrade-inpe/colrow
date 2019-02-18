@@ -1,7 +1,7 @@
 ---
 title: 'colrow: Handling SimU, CR, and LU data'
 author: "Pedro R. Andrade"
-date: "`r format('8 February 2019')`"
+date: "`r format('18 February 2019')`"
 urlcolor: blue
 output:
   pdf_document:
@@ -45,14 +45,15 @@ and save them in a single directory. Create a variable in R to store this direct
 dataDir <- "c:/Users/pedro/Dropbox/colrow/"
 ```
 
-The content of the directory should have 17 files as shown below.
+The content of the directory should have the following files:
 
 ```{r}
 list.files(dataDir)
 ```
 
-See the available countries in alphabetical order, use `getCountries()`.
-The code below shows the first 10.
+To see the available countries in alphabetical order, use `getCountries()`,
+passing the data directory as argument.
+The code below shows the first ten countries.
 
 ```{r}
 colrow::getCountries(dataDir)[1:10]
@@ -60,7 +61,8 @@ colrow::getCountries(dataDir)[1:10]
 
 Then use `getLU()`, `getCR()`, and/or `getSimU()` to generate geospatial data for a given country.
 They get as first argument the country name written in the same way as one of the outputs of `getCountries()`. The second argument is the directory where the data downloaded from Dropbox
-was stored. These functions take some time to execute.
+was stored. Some of these functions might take time to execute, according to the
+selected arguments.
 
 ```{r}
 country <- "Brazil"
@@ -75,13 +77,13 @@ To see that everything is correct, plot the data.
 ```{r}
 par(mfrow = c(1, 3), mar = c(5, 0.1, 5, 0.1))
 
-plot(sf::st_geometry(mySimU), main = "SimU", col = "red"); box()
-plot(sf::st_geometry(myCR),   main = "CR", col = "blue"); box()
-plot(sf::st_geometry(myLU),   main = "LU", col ="green"); box()
+plot(sf::st_geometry(mySimU), main = "SimU (Grouped HRU in .5°x.5°)", col = "red"); box()
+plot(sf::st_geometry(myCR),   main = "CR (.5°x.5°)", col = "blue"); box()
+plot(sf::st_geometry(myLU),   main = "LU (2°x2°)", col ="green"); box()
 ```
 
-Finally, save the data to be used by the processing functions. Each of this files
-has a column named `ID` that will be used to match the objects from the CSV data.
+Finally, save the data to be used by the processing functions. Each of these files
+has a column named `ID` that will be used to match the objects stored in CSV files.
 Once these files are saved, it is not necessary to create them again every time
 outputs are processed.
 
@@ -96,16 +98,20 @@ sf::write_sf(mySimU, paste0(country, "SimU.shp"))
 The same functions above can be used to get several countries together. Just use the
 names of the countries as a string vector for the first argument. For example, the code
 below gets LU data for all nine countries of the Amazon basin.
-This and several examples of plotting in this tutorial use `tmap` package.
 
 ```{r}
-require(tmap)
-
 amazon <- c("Brazil", "Peru", "Colombia", "Venezuela",
             "Ecuador", "Bolivia", "Guyana",
             "Suriname", "French Guiana")
 
 lu <- colrow::getLU(amazon, dataDir)
+```
+
+Then we can plot them together.
+This and several examples of plotting in this tutorial use `tmap` package.
+
+```{r}
+require(tmap)
 
 tm_shape(lu) +
   tm_fill(col ="Country") +
@@ -129,9 +135,9 @@ lu %>%
 # Processing outputs
 
 To process a CSV file, it is necessary to choose the created shapefile that matches
-the representation used in the csv. Then, it is necessary to define the attribute names,
+the representation used in the CSV. Then, it is necessary to define the attribute names,
 as the CSV files do not store a header.
-These names must have one attribute called `ID` and another called `VALUE`.
+These names must have one attribute called `ID` (to match the geometries) and another called `VALUE` (with the output value).
 Function `processFile()` gets the shapefile,
 the CSV file, and the description of the attributes as arguments.
 You can use `colrow::attrs()` to avoid quotes.
@@ -140,27 +146,24 @@ You can use `colrow::attrs()` to avoid quotes.
 csvfile <- system.file("extdata/scenarios/FC/Land_Compare3_FC.csv", package = "colrow")
 attributes <- colrow::attrs(COUNTRY, ID, ALTI, SLP, SOIL, USE, SCENARIO, YEAR, VALUE)
 
-result <- colrow::processFile(
-  "BrazilCR.shp",
-  csvfile,
-  attributes
-)
+result <- colrow::processFile("BrazilCR.shp", csvfile, attributes)
 ```
 
 This function automatically ignores all attributes that have only one value (`COUNTRY`, `ALTI`,
 `SLP`, `SOIL` and `SCENARIO` above). The other
 attributes (except `ID` and `VALUE`) compose the created attribute names (`USE` and `YEAR` above). They are
-concatenated according to their order in the CSV file.
+concatenated according to their order in the CSV file. See the names of the
+attributes below.
 
 ```{r}
 names(result)
 ```
 
-It is possible to plot the created attributes by simply calling `plot()`, selecting
-a given attribute.
+It is possible to plot a map selecting a given attribute using tmap package:
 
 ```{r}
-plot(result["CrpLnd2000"])
+tm_shape(result) +
+  tm_fill(col = "CrpLnd2010")
 ```
 
 It is also possible to use `processFile()` to save the output when processing a file by adding
@@ -177,7 +180,7 @@ colrow::processFile(
 
 Note that shapefiles have limits: 255 or less columns, ten or less characters in the attribute
 names. When working with large attribute names, it is necessary to simplify the names. In the
-case below, seven names will be replaced. For instance, `CrpLnd` will be replaced by `cr` in the attribute names.
+example below, seven names will be replaced by shorter names. For instance, `CrpLnd` will be replaced by `cr` in the attribute names.
 
 ```{r}
 convert <- list(
@@ -227,7 +230,7 @@ result <- colrow::processFile(
 
 # Plotting outputs
 
-To plot the outputs created above, first we will draw the Brazilian Biomes on top
+To plot the outputs created above, first we read the Brazilian Biomes to be drawn on top
 of the ColRows. The shapefile
 with this data is stored in file `br_biomes.shp` available within `colrow` package. We will
 use CR data from `brazilLandCompare.shp`, created previously in this tutorial.
@@ -237,9 +240,9 @@ brazil <- sf::read_sf("brazilLandCompare.shp")
 biomes <- system.file("extdata/shape", "br_biomes.shp", package = "colrow") %>% sf::read_sf()
 ```
 
-Then select a palette from the functions availables in `RColorBrewer` using `brewer.pal()`
-(see the description of all colors available [here](http://colorbrewer2.org)) and
-choose the cuts to represent the intervals of each slice. In the code below, as we have
+The next step is to select a palette from the functions availables in `RColorBrewer`, using `brewer.pal()`
+(see the description of all colors available [here](http://colorbrewer2.org)), and
+to choose the cuts to represent the intervals of each slice. In the code below, as we have
 seven cuts, we need to define six colors.
 
 ```{r}
@@ -258,7 +261,7 @@ tm_shape(brazil) +
   tm_borders(lwd = 1, col = "black")
 ```
 
-If you want to zoom in the map to a given region, it is possible to set a `bbox` to
+If only part of the map is necessary, it is possible to zoom in the map to a given region by selecting a `bbox` to
 the `tm_shape()`:
 
 ```{r}
@@ -271,7 +274,7 @@ tm_shape(brazil, bbox = amazCerradoBox) +
   tm_borders(lwd = 1, col = "black")
 ```
 
-If you want to save this plot or any other created within R into a file, it is
+To save this or any other plot created within R into a file using tmap package, it is
 necessary to store the plot into a variable and then call `tmap_save()`. For example, the following code creates variable `result` storing the same map created above and then saves it into file `amz-cerrado.png` in the current directory.
 
 ```{r}
@@ -285,8 +288,8 @@ tmap_save(result, "amaz-cerrado.png")
 
 It is also possible to create several maps using `plotAll()`. This function
 automatically uses all the values of several attributes with the same prefix
-in order to define a common legend. The following code creates six pdf files,
-each one plotting grassland from 2000 to 2050.
+in order to define a common legend, with the same maximum and minimum values. The following code creates six pdf files,
+each one plotting grassland, from 2000 to 2050.
 
 ```{r}
 require(tmap)
@@ -297,9 +300,9 @@ plotAll(brazil, "GrsLnd", palette = "RdPu", title = "Grass", additional =
 )
 ```
 
-# Handling csv files
+# Handling CSV files
 
-You can handle csv files directly to create charts or to compute values without
+You can handle CSV files directly to create charts or to compute values without
 creating shapefiles. First read data as a tibble using `readCSV()`:
 
 ```{r}
@@ -346,7 +349,7 @@ result <- data %>%
 result
 ```
 
-Finally, just use `ggplot` to draw the evolution of each land use area per year.
+Finally, just use `ggplot()` to draw the evolution of each land use area per year.
 
 ```{r}
 require(ggplot2)
@@ -360,4 +363,4 @@ ggplot(result) +
 
 # Final remarks
 
-If you have suggestions or want to report an error, please visit the GitHup page [here](https://github.com/pedro-andrade-inpe/colrow).
+If you have any suggestions or want to report an error, please visit the GitHup page of the package [here](https://github.com/pedro-andrade-inpe/colrow).
