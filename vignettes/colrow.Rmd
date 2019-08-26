@@ -107,6 +107,12 @@ amazon <- c("Brazil", "Peru", "Colombia", "Venezuela",
 lu <- colrow::getLU(amazon, dataDir)
 ```
 
+To save the file, just use `write_sf()`:
+
+```{r}
+sf::write_sf(lu, "amazonLU.shp")
+```
+
 Then we can plot them together.
 This and several examples of plotting in this tutorial use `tmap` package.
 
