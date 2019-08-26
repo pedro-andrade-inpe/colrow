@@ -89,11 +89,17 @@ processFile <- function(shapefile, csvfile, description, outputfile = NULL, conv
 
   cat(paste0("Spreading the data\n"))
 
-  result <- dplyr::select(data, -removePos) %>%
-    tidyr::unite(KEY, toBeJoined, sep = "") %>%
-    dplyr::group_by_("ID", "KEY") %>%
-    dplyr::summarise(VALUE = aggregate(VALUE)) %>%
-    tidyr::spread(key = KEY, VALUE)
+  if(length(toBeJoined) == 0){
+    result <<- dplyr::select(data, -removePos) %>%
+      dplyr::group_by_("ID") %>%
+      dplyr::summarise(VALUE = aggregate(VALUE))
+  }else{
+    result <<- dplyr::select(data, -removePos) %>%
+      tidyr::unite(KEY, toBeJoined, sep = "") %>%
+      dplyr::group_by_("ID", "KEY") %>%
+      dplyr::summarise(VALUE = aggregate(VALUE)) %>%
+      tidyr::spread(key = KEY, VALUE)
+  }
 
   cat(paste0(dim(result)[2], " attributes were created\n"))
 
