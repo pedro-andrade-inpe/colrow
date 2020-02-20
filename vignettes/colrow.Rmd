@@ -369,4 +369,4 @@ ggplot(result) +
 
 # Final remarks
 
-If you have any suggestions or want to report an error, please visit the GitHup page of the package [here](https://github.com/pedro-andrade-inpe/colrow).
+If you have any suggestions or want to report an error, please visit the GitHub page of the package [here](https://github.com/pedro-andrade-inpe/colrow).
