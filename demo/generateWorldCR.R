@@ -25,7 +25,7 @@ for(count in 2:total){
   }
 }
 
-sf::write_sf(allCountries, "worldCR.shp")
+sf::write_sf(allCountries, paste0(data, "worldCR.shp"))
 
 #############################################################################
 
@@ -53,5 +53,4 @@ for(count in 2:total){
   }
 }
 
-sf::write_sf(allCountries, "worldLU.shp")
-
+sf::write_sf(allCountries, paste0(data, "worldLU.shp"))

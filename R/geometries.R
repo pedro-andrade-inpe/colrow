@@ -7,7 +7,7 @@ checkVersion = function(directory){
     line <- readLines(con, n = 1)
     close(con)
 
-    if(line != "0.1")
+    if(line != "0.2")
       stop(outdatedMessage)
   }
   else{
@@ -118,7 +118,7 @@ getSimU <- function(countryNames, dataDirectory, join = TRUE){
     dplyr::filter(COUNTRY == countryNumber) %>%
     dplyr::filter(SimUID != 0) %>%
     tidyr::separate("Grd30", c("X", "Y")) %>%
-    dplyr::mutate(ColRow = paste0("CR", X, Y)) %>%
+    dplyr::mutate(ColRow = paste0("CR", stringr::str_pad(X, width = 3, pad = "0"), stringr::str_pad(Y, width = 3, pad = "0"))) %>%
     dplyr::mutate(ID = SimUID) %>%
     dplyr::select(ID, ColRow)
 
