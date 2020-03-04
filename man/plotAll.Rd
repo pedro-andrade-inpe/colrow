@@ -4,8 +4,16 @@
 \alias{plotAll}
 \title{Plot several maps according to a prefix}
 \usage{
-plotAll(data, prefix, title = prefix, slices = 5, palette = "RdPu",
-  additional = NULL, extension = "pdf", ...)
+plotAll(
+  data,
+  prefix,
+  title = prefix,
+  slices = 5,
+  palette = "RdPu",
+  additional = NULL,
+  extension = "pdf",
+  ...
+)
 }
 \arguments{
 \item{data}{A sf (simple feature) object.}

@@ -59,8 +59,9 @@ LU2SimU <- function(){
 #' files available at https://bit.ly/2RrgZi9 (shortened from https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0).
 #' @param join Should all SimuS with the same ID be represented together as a single MultiPolygon?
 #' The default value is true.
+#' @param simu A simple feature with loaded SimUs. Default is NULL, which means that the SimU data will be loaded from dataDirectory.
 #' @export
-getSimU <- function(countryNames, dataDirectory, join = TRUE){
+getSimU <- function(countryNames, dataDirectory, join = TRUE, simu = NULL){
   if(length(countryNames) > 1){
     result <- getSimU(countryNames[1], dataDirectory)
     result$Country <- countryNames[1]
@@ -99,9 +100,10 @@ getSimU <- function(countryNames, dataDirectory, join = TRUE){
       stop(paste0("Could not find ", countryNames), ".")
   }
 
-  cat(crayon::green("Reading all SimUs\n"))
-
-  simu <- sf::read_sf(paste0(dataDirectory, "SimU_all.shp"))
+  if(is.null(simu)){
+    cat(crayon::green("Reading all SimUs\n"))
+    simu <- sf::read_sf(paste0(dataDirectory, "SimU_all.shp"))
+  }
 
   cat(crayon::green("Subsetting SimUs\n"))
 
@@ -131,13 +133,14 @@ getSimU <- function(countryNames, dataDirectory, join = TRUE){
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
 #' @param cache If true (default), use the LUs precomputed.
 #' Otherwise, it will compute from the original data.
+#' @param simu A simple feature with loaded SimUs. Default is NULL, which means that the SimU data will be loaded from dataDirectory.
 #' @export
-getLU <- function(countryNames, dataDirectory, cache = TRUE){
+getLU <- function(countryNames, dataDirectory, cache = TRUE, simu = NULL){
   if(length(countryNames) > 1){
-    result <- getLU(countryNames[1], dataDirectory, cache)
+    result <- getLU(countryNames[1], dataDirectory, cache, simu)
 
     for(i in 2:length(countryNames)){
-      result <- rbind(result, getLU(countryNames[i], dataDirectory, cache))
+      result <- rbind(result, getLU(countryNames[i], dataDirectory, cache, simu))
     }
 
     return(result)
@@ -155,7 +158,7 @@ getLU <- function(countryNames, dataDirectory, cache = TRUE){
     return(result)
   }
 
-  res <- colrow::getSimU(countryNames, dataDirectory, FALSE)
+  res <- colrow::getSimU(countryNames, dataDirectory, FALSE, simu)
 
   if(dim(res)[1] == 0) return(NULL)
 
@@ -200,13 +203,15 @@ getCountries <- function(dataDirectory){
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
 #' @param cache If true (default), use the LUs precomputed.
 #' Otherwise, it will compute from the original data.
+#' @param simu A simple feature with loaded SimUs. Default is NULL, which means that the SimU data will be loaded from dataDirectory.
+#'
 #' @export
-getCR <- function(countryNames, dataDirectory, cache = TRUE){
+getCR <- function(countryNames, dataDirectory, cache = TRUE, simu = NULL){
   if(length(countryNames) > 1){
-    result <- getCR(countryNames[1], dataDirectory, cache)
+    result <- getCR(countryNames[1], dataDirectory, cache, simu)
 
     for(i in 2:length(countryNames)){
-      result <- rbind(result, getCR(countryNames[i], dataDirectory, cache))
+      result <- rbind(result, getCR(countryNames[i], dataDirectory, cache, simu))
     }
 
     return(result)
@@ -224,7 +229,7 @@ getCR <- function(countryNames, dataDirectory, cache = TRUE){
     return(result)
   }
 
-  res <- getSimU(countryNames, dataDirectory, FALSE)
+  res <- getSimU(countryNames, dataDirectory, FALSE, simu)
 
   if(dim(res)[1] == 0) return(NULL)
 

@@ -4,7 +4,7 @@
 \alias{getSimU}
 \title{Return SimU geometries for a given country.}
 \usage{
-getSimU(countryNames, dataDirectory, join = TRUE)
+getSimU(countryNames, dataDirectory, join = TRUE, simu = NULL)
 }
 \arguments{
 \item{countryNames}{Names of the countries as a string vector. It can have one or more values.}
@@ -14,6 +14,8 @@ files available at https://bit.ly/2RrgZi9 (shortened from https://www.dropbox.co
 
 \item{join}{Should all SimuS with the same ID be represented together as a single MultiPolygon?
 The default value is true.}
+
+\item{simu}{A simple feature with loaded SimUs.}
 }
 \description{
 Return all Simulation Units of a given country as a simple feature.

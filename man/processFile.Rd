@@ -4,8 +4,15 @@
 \alias{processFile}
 \title{Convert a given output csv file to a shapefile.}
 \usage{
-processFile(shapefile, csvfile, description, outputfile = NULL,
-  convertList = NULL, aggregate = sum, toAggregate = NULL)
+processFile(
+  shapefile,
+  csvfile,
+  description,
+  outputfile = NULL,
+  convertList = NULL,
+  aggregate = sum,
+  toAggregate = NULL
+)
 }
 \arguments{
 \item{shapefile}{Name of the input shapefile. This file must be created using getCR,

@@ -4,7 +4,7 @@
 \alias{getLU}
 \title{Return LU geometries for a given country.}
 \usage{
-getLU(countryNames, dataDirectory, cache = TRUE)
+getLU(countryNames, dataDirectory, cache = TRUE, simu = NULL)
 }
 \arguments{
 \item{countryNames}{Names of the countries as a string vector. It can have one or more values.}
@@ -14,6 +14,8 @@ files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYs
 
 \item{cache}{If true (default), use the LUs precomputed.
 Otherwise, it will compute from the original data.}
+
+\item{simu}{A simple feature with loaded SimUs.}
 }
 \description{
 Return all Large Units of a given country as a simple feature.
