@@ -77,18 +77,17 @@ getSimU <- function(countryNames, dataDirectory, join = TRUE){
   checkVersion(dataDirectory)
   cat(crayon::green("Reading all countries\n"))
 
-  countries <- sf::read_sf(paste0(dataDirectory, "g2006_2.shp")) %>%
-    sf::st_set_crs(4326)
+  countries <- read.csv(system.file("extdata/ID_COUNTRY.csv", package = "colrow"))
 
   cat(crayon::green(paste0("Selecting ", countryNames, "\n")))
 
-  country <- countries %>% dplyr::filter(ADM0_NAME == countryNames)
+  country <- countries %>% dplyr::filter(ALLCOUNTRY == countryNames)
 
   if(dim(country)[1] == 0){
     distances <- countryNames %>%
-      stringdist::stringdist(countries$ADM0_NAME, method = "dl")
+      stringdist::stringdist(countries$ALLCOUNTRY, method = "dl")
 
-    suggestions <- unique(countries$ADM0_NAME[which(distances < 3)])
+    suggestions <- unique(countries$ALLCOUNTRY[which(distances < 3)])
 
     if(length(suggestions) > 0)
       stop(paste0("Could not find ",
@@ -106,16 +105,8 @@ getSimU <- function(countryNames, dataDirectory, join = TRUE){
 
   cat(crayon::green("Subsetting SimUs\n"))
 
-  simuCountry <- suppressMessages(simu[country, op = sf::st_intersects])
-
-  countryNumber <- simuCountry$COUNTRY %>%
-    table() %>%
-    which.max() %>%
-    names() %>%
-    as.numeric()
-
-  simuCountry <- simuCountry %>%
-    dplyr::filter(COUNTRY == countryNumber) %>%
+  simuCountry <- simu %>%
+    dplyr::filter(COUNTRY == country$COUNTRYCODE_UN) %>%
     dplyr::filter(SimUID != 0) %>%
     tidyr::separate("Grd30", c("X", "Y")) %>%
     dplyr::mutate(ColRow = paste0("CR", stringr::str_pad(X, width = 3, pad = "0"), stringr::str_pad(Y, width = 3, pad = "0"))) %>%
@@ -196,9 +187,9 @@ getLU <- function(countryNames, dataDirectory, cache = TRUE){
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
 #' @export
 getCountries <- function(dataDirectory){
-  countries <- sf::read_sf(paste0(dataDirectory, "g2006_2.shp"))
+  countries <- read.csv(system.file("extdata/ID_COUNTRY.csv", package = "colrow"))
 
-  sort(unique(countries$ADM0_NAME))
+  sort(unique(countries$ALLCOUNTRY))
 }
 
 #' @title Return CR geometries for a given country.
