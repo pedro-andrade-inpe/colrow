@@ -7,7 +7,7 @@ checkVersion = function(directory){
     line <- readLines(con, n = 1)
     close(con)
 
-    if(line != "0.2")
+    if(line != "0.3")
       stop(outdatedMessage)
   }
   else{
