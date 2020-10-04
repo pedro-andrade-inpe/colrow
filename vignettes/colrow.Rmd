@@ -1,7 +1,7 @@
 ---
 title: 'colrow: Handling SimU, CR, and LU data'
 author: "Pedro R. Andrade"
-date: "`r format('28 August 2019')`"
+date: "`r format('4 September 2020')`"
 urlcolor: blue
 output:
   pdf_document:
@@ -365,6 +365,24 @@ ggplot(result) +
   geom_line(lwd = 1.5) +
   theme_bw() +
   ylab("Total (ha)")
+```
+
+# Subsetting data for Study Area
+
+Sometimes the user needs to use only the results of a given study area. Let us suppose that
+this area is Amazon biome. We can simply use `sf::st_intersects()` to subset the objects.
+
+```{r}
+amaz <- biomes[1,] %>% sf::st_transform(crs = sf::st_crs(myLU))
+subset <- myLU[apply(sf::st_intersects(myLU, amaz), 1, any),]
+
+result <- tm_shape(subset) +
+  tm_borders(lwd = 1, col = "black") +
+  tm_fill(col = "blue") +
+  tm_shape(amaz) +
+  tm_borders(lwd = 2, col = "black")
+
+result
 ```
 
 # Final remarks
