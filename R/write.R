@@ -7,6 +7,11 @@
 #' @param outfile Name of the file to be saved.
 #' @export
 writeAllColRow <- function(tokens, header, outfile){
+  if(length(unique(tokens)) < length(tokens)){
+    warning("Removing repeated IDs before saving them")
+    tokens <- unique(tokens)
+  }
+
   result <- paste0(header, "\n/\n")
   nlines <- ceiling(length(tokens) / 10)
   token.list <- split(tokens, rep(1:nlines,
