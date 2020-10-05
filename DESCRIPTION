@@ -1,7 +1,7 @@
 Package: colrow
 Type: Package
 Title: Handling SimU, CR, and LU data
-Version: 0.4-1
+Version: 0.4-2
 Date: 2020-09-04
 Authors@R: c(person('Pedro', 'Andrade', role = c('aut', 'cre'), email = 'pedro.andrade@inpe.br'))
 Maintainer: Pedro R. Andrade <pedro.andrade@inpe.br>
@@ -34,7 +34,7 @@ Imports:
 Suggests:
     knitr,
     rmarkdown
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 Collate:
 	'pipe.R'
 	'process.R'
@@ -42,6 +42,7 @@ Collate:
 	'geometries.R'
 	'slicing.R'
 	'plot.R'
+	'write.R'
 	'zzz.R'
 VignetteBuilder:
   knitr,
