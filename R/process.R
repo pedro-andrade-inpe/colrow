@@ -156,8 +156,8 @@ processScenario <- function(shapefile, scenario, output){
 
 #' @title Return the scenarios of a directory
 #' @description This function returns the scenarios of a given directory. Each
-#' scenario is stored as a
-#' It removes the directory "results" from the list if it exists.
+#' scenario is stored as a directory.
+#' It only removes the directory "results" from the list of directories if it exists.
 #' @param directory Name of the directory
 #' @export
 getScenarios <- function(directory){

@@ -15,7 +15,7 @@ files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYs
 \item{cache}{If true (default), use the LUs precomputed.
 Otherwise, it will compute from the original data.}
 
-\item{simu}{A simple feature with loaded SimUs.}
+\item{simu}{A simple feature with loaded SimUs. Default is NULL, which means that the SimU data will be loaded from dataDirectory.}
 }
 \description{
 Return all ColRows of a given country as a set of simple feature

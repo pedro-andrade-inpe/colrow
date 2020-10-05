@@ -15,7 +15,7 @@ files available at https://bit.ly/2RrgZi9 (shortened from https://www.dropbox.co
 \item{join}{Should all SimuS with the same ID be represented together as a single MultiPolygon?
 The default value is true.}
 
-\item{simu}{A simple feature with loaded SimUs.}
+\item{simu}{A simple feature with loaded SimUs. Default is NULL, which means that the SimU data will be loaded from dataDirectory.}
 }
 \description{
 Return all Simulation Units of a given country as a simple feature.
