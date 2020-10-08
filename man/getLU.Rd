@@ -4,7 +4,13 @@
 \alias{getLU}
 \title{Return LU geometries for a given country.}
 \usage{
-getLU(countryNames, dataDirectory, cache = TRUE, simu = NULL)
+getLU(
+  countryNames = NULL,
+  dataDirectory,
+  cache = TRUE,
+  simu = NULL,
+  as.cr = NULL
+)
 }
 \arguments{
 \item{countryNames}{Names of the countries as a string vector. It can have one or more values.}

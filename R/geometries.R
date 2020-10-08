@@ -133,9 +133,23 @@ getSimU <- function(countryNames, dataDirectory, join = TRUE, simu = NULL){
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
 #' @param cache If true (default), use the LUs precomputed.
 #' Otherwise, it will compute from the original data.
-#' @param simu A simple feature with loaded SimUs. Default is NULL, which means that the SimU data will be loaded from dataDirectory.
+#' @param as.cr A list of countries to be loaded as CR instead of LU.
+#' @param simu A simple feature with loaded SimUs. Default is NULL, which means that the SimU data
+#' will be loaded from dataDirectory.
 #' @export
-getLU <- function(countryNames, dataDirectory, cache = TRUE, simu = NULL){
+getLU <- function(countryNames = NULL, dataDirectory, cache = TRUE, simu = NULL, as.cr = NULL){
+  if(is.null(countryNames)){
+    countryNames <- colrow::getCountries()
+  }
+
+  if(!is.null(as.cr)){
+    countryNames <- countryNames[-which(countryNames %in% as.cr)]
+    ludata <- colrow::getLU(countryNames, dataDirectory)
+    crdata <- colrow::getCR(as.cr, dataDir)
+
+    return(rbind(ludata, crdata))
+  }
+
   if(length(countryNames) > 1){
     result <- getLU(countryNames[1], dataDirectory, cache, simu)
 
