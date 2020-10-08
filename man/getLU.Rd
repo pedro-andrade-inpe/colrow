@@ -13,7 +13,8 @@ getLU(
 )
 }
 \arguments{
-\item{countryNames}{Names of the countries as a string vector. It can have one or more values.}
+\item{countryNames}{Names of the countries as a string vector. It can have one or more values.
+As default, it will return all countries in the World as LU.}
 
 \item{dataDirectory}{Directory where input data is located. This directory needs to have
 files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.}

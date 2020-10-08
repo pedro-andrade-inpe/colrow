@@ -129,6 +129,7 @@ getSimU <- function(countryNames, dataDirectory, join = TRUE, simu = NULL){
 #' @title Return LU geometries for a given country.
 #' @description Return all Large Units of a given country as a simple feature.
 #' @param countryNames Names of the countries as a string vector. It can have one or more values.
+#' As default, it will return all countries in the World as LU.
 #' @param dataDirectory Directory where input data is located. This directory needs to have
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
 #' @param cache If true (default), use the LUs precomputed.
