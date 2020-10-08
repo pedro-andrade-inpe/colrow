@@ -21,7 +21,10 @@ files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYs
 \item{cache}{If true (default), use the LUs precomputed.
 Otherwise, it will compute from the original data.}
 
-\item{simu}{A simple feature with loaded SimUs. Default is NULL, which means that the SimU data will be loaded from dataDirectory.}
+\item{simu}{A simple feature with loaded SimUs. Default is NULL, which means that the SimU data
+will be loaded from dataDirectory.}
+
+\item{as.cr}{A list of countries to be loaded as CR instead of LU.}
 }
 \description{
 Return all Large Units of a given country as a simple feature.

@@ -11,6 +11,7 @@ processFile(
   outputfile = NULL,
   convertList = NULL,
   aggregate = sum,
+  ignore = NULL,
   toAggregate = NULL
 )
 }
@@ -32,6 +33,11 @@ values must be string.}
 \item{aggregate}{A function to be used to join values with the same ID and attributes
 to be joinded. As default, it will use sum, but it is possible to use functions such as
 average.}
+
+\item{ignore}{A vector of attributes to be ignored. For example, when processing the
+whole World, usually there is a column with the country name, which is not unique and
+therefore it will not be ignored as default. Such attribute must be included in this
+argument to avoid creating one attribute for each country. Default is NULL.}
 
 \item{toAggregate}{Attributes to be used only to aggregate, ignoring their values in
 the created attribute names.}
