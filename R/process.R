@@ -35,10 +35,14 @@ readCSV <- function(csvfile, product){
 #' @param aggregate A function to be used to join values with the same ID and attributes
 #' to be joinded. As default, it will use sum, but it is possible to use functions such as
 #' average.
+#' @param ignore A vector of attributes to be ignored. For example, when processing the
+#' whole World, usually there is a column with the country name, which is not unique and
+#' therefore it will not be ignored as default. Such attribute must be included in this
+#' argument to avoid creating one attribute for each country. Default is NULL.
 #' @param toAggregate Attributes to be used only to aggregate, ignoring their values in
 #' the created attribute names.
 #' @export
-processFile <- function(shapefile, csvfile, description, outputfile = NULL, convertList = NULL, aggregate = sum, toAggregate = NULL) {
+processFile <- function(shapefile, csvfile, description, outputfile = NULL, convertList = NULL, aggregate = sum, ignore = NULL, toAggregate = NULL) {
   if(class(description) != "character") stop(paste0("Argument 'description' should be 'character', got '", class(description), "'."))
 
   cat(paste0("Reading shapefile: ", shapefile, "\n"))
@@ -76,7 +80,7 @@ processFile <- function(shapefile, csvfile, description, outputfile = NULL, conv
   counts <- data %>% dplyr::summarise_all(dplyr::funs(dplyr::n_distinct(.)))
 
   removePos <- which(counts == 1)
-  removed <- names(counts)[removePos]
+  removed <- c(names(counts)[removePos], ignore)
   cat(paste0("Ignored attributes: ", paste(removed, collapse = ", "), "\n"))
 
   toBeJoined <- dplyr::setdiff(names(counts), c(removed, "ID", "VALUE", toAggregate))
