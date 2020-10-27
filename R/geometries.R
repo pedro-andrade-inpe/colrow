@@ -30,7 +30,7 @@ LU2CR <- function(){
   data <- data %>%
     dplyr::mutate(values = stringr::str_replace_all(values, " ", "")) %>%
     tidyr::separate("values", c("LU", "CR")) %>%
-    dplyr::group_by_(.dots = "LU") %>%
+    dplyr::group_by(LU) %>%
     dplyr::arrange(.by_group = TRUE)
 
   data[-which(is.na(data[,"CR"])),]
@@ -78,7 +78,7 @@ getSimU <- function(countryNames, dataDirectory, join = TRUE, simu = NULL){
   checkVersion(dataDirectory)
   cat(crayon::green("Reading all countries\n"))
 
-  countries <- read.csv(system.file("extdata/ID_COUNTRY.csv", package = "colrow"))
+  countries <- utils::read.csv(system.file("extdata/ID_COUNTRY.csv", package = "colrow"))
 
   cat(crayon::green(paste0("Selecting ", countryNames, "\n")))
 
@@ -146,7 +146,7 @@ getLU <- function(countryNames = NULL, dataDirectory, cache = TRUE, simu = NULL,
   if(!is.null(as.cr)){
     countryNames <- countryNames[-which(countryNames %in% as.cr)]
     ludata <- colrow::getLU(countryNames, dataDirectory)
-    crdata <- colrow::getCR(as.cr, dataDir)
+    crdata <- colrow::getCR(as.cr, dataDirectory)
 
     return(rbind(ludata, crdata))
   }
@@ -205,7 +205,7 @@ getLU <- function(countryNames = NULL, dataDirectory, cache = TRUE, simu = NULL,
 #' files available at https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0.
 #' @export
 getCountries <- function(dataDirectory){
-  countries <- read.csv(system.file("extdata/ID_COUNTRY.csv", package = "colrow"))
+  countries <- utils::read.csv(system.file("extdata/ID_COUNTRY.csv", package = "colrow"))
 
   sort(unique(countries$ALLCOUNTRY))
 }

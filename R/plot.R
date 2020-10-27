@@ -37,10 +37,10 @@ plotAll <- function(data, prefix, title = prefix, slices = 5, palette = "RdPu", 
     suffix <- stringr::str_sub(attribute, nchar(prefix) + 1, nchar(attribute))
     mtitle <- paste(title, suffix)
 
-    m <- tm_shape(data) +
-      tm_fill(col = attribute, palette = palette, breaks = cuts, title = mtitle, ...) +
+    m <- tmap::tm_shape(data) +
+      tmap::tm_fill(col = attribute, palette = palette, breaks = cuts, title = mtitle, ...) +
       additional
 
-    tmap_save(m, paste0(attribute, ".", extension))
+    tmap::tmap_save(m, paste0(attribute, ".", extension))
   }
 }

@@ -5,5 +5,5 @@
                                   utils::packageDescription("colrow")$Version))
 }
 
-utils::globalVariables("%>%")
-
+utils::globalVariables(c("%>%", ".", "ALLCOUNTRY", "COUNTRY", "ColRow", "Country", "ID", "KEY",
+                       "SimU", "SimUID", "VALUE", "X", "Y", "LU", "values"))

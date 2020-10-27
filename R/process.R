@@ -77,7 +77,7 @@ processFile <- function(shapefile, csvfile, description, outputfile = NULL, conv
       message(ldiff2, "objects belong to the csv file but not to the shapefile: ", paste(diff2, collapse = ", "))
   }
 
-  counts <- data %>% dplyr::summarise_all(dplyr::funs(dplyr::n_distinct(.)))
+  counts <- data %>% dplyr::summarise_all(dplyr::n_distinct)
 
   removePos <- which(counts == 1)
   removed <- c(names(counts)[removePos], ignore)
@@ -94,15 +94,15 @@ processFile <- function(shapefile, csvfile, description, outputfile = NULL, conv
   cat(paste0("Spreading the data\n"))
 
   if(length(toBeJoined) == 0){
-    result <<- dplyr::select(data, -removePos) %>%
-      dplyr::group_by_("ID") %>%
+    result <- dplyr::select(data, -removePos) %>%
+      dplyr::group_by(ID) %>%
       dplyr::summarise(VALUE = aggregate(VALUE))
   }else{
-    result <<- dplyr::select(data, -removePos) %>%
+    result <- dplyr::select(data, -removePos) %>%
       tidyr::unite(KEY, toBeJoined, sep = "") %>%
-      dplyr::group_by_("ID", "KEY") %>%
+      dplyr::group_by(ID, KEY) %>%
       dplyr::summarise(VALUE = aggregate(VALUE)) %>%
-      tidyr::spread(key = KEY, VALUE)
+      tidyr::pivot_wider(names_from = KEY, values_from = VALUE)
   }
 
   cat(paste0(dim(result)[2], " attributes were created\n"))
@@ -148,7 +148,7 @@ processFile <- function(shapefile, csvfile, description, outputfile = NULL, conv
 }
 
 processScenario <- function(shapefile, scenario, output){
-  shp <- rgdal::readOGR(datafile, encoding = "ESRI Shapefile", verbose = FALSE)
+  shp <- rgdal::readOGR(shapefile, encoding = "ESRI Shapefile", verbose = FALSE)
 
   shp@data[is.na(shp@data)] <- 0.0
 
