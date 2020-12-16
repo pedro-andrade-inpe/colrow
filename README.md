@@ -1,6 +1,10 @@
 colrow - Handling SimU, CR, and LU data
 =======
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/pedro-andrade-inpe/colrow/workflows/R-CMD-check/badge.svg)](https://github.com/pedro-andrade-inpe/colrow/actions)
+<!-- badges: end -->
+
 ### Instructions to install in Windows
 
 Run the following commands in R:
