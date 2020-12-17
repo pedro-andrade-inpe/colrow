@@ -13,26 +13,25 @@ URL: https://github.com/pedro-andrade-inpe/colrow/
 BugReports: https://github.com/pedro-andrade-inpe/colrow/issues
 Imports:
     dplyr,
-    sp,
     tibble,
     tidyr,
-    plyr,
     rgdal,
     tools,
     readr,
-    methods,
     crayon,
     stringdist,
     magrittr,
     sf,
     maptools,
     stringr,
-    ggplot2,
     tmap,
-    RColorBrewer,
-    testthat
+    RColorBrewer
 Suggests:
     knitr,
+    sp,
+    ggplot2,
+    plyr,
+    testthat,
     rmarkdown
 RoxygenNote: 7.1.1
 Collate:
