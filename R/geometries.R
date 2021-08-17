@@ -118,9 +118,9 @@ getSimU <- function(countryNames, dataDirectory, join = TRUE, simu = NULL){
   if(join){
     cat(crayon::green("Joining SimUs\n"))
 
-    simuCountry <- simuCountry %>%
+    simuCountry <- suppressMessages(simuCountry %>%
       dplyr::group_by(ID) %>%
-      dplyr::summarise(ColRow = ColRow[1])
+      dplyr::summarise(ColRow = ColRow[1]))
   }
 
   simuCountry
