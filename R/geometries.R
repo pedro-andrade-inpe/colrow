@@ -62,6 +62,12 @@ LU2SimU <- function(){
 #' @param simu A simple feature with loaded SimUs. Default is NULL, which means that the SimU data will be loaded from dataDirectory.
 #' @export
 getSimU <- function(countryNames, dataDirectory, join = TRUE, simu = NULL){
+  dataDirectory <- paste0(dataDirectory, "/")
+
+  # https://stackoverflow.com/questions/68478179/how-to-resolve-spherical-geometry-failures-when-joining-spatial-data
+  old <- sf::sf_use_s2()
+  sf::sf_use_s2(FALSE)
+
   if(length(countryNames) > 1){
     result <- getSimU(countryNames[1], dataDirectory)
     result$Country <- countryNames[1]
@@ -123,6 +129,7 @@ getSimU <- function(countryNames, dataDirectory, join = TRUE, simu = NULL){
       dplyr::summarise(ColRow = ColRow[1]))
   }
 
+  sf::sf_use_s2(old)
   simuCountry
 }
 
@@ -139,7 +146,9 @@ getSimU <- function(countryNames, dataDirectory, join = TRUE, simu = NULL){
 #' will be loaded from dataDirectory.
 #' @export
 getLU <- function(countryNames = NULL, dataDirectory, cache = TRUE, simu = NULL, as.cr = NULL){
-  if(is.null(countryNames)){
+  dataDirectory <- paste0(dataDirectory, "/")
+
+    if(is.null(countryNames)){
     countryNames <- colrow::getCountries()
   }
 
@@ -222,6 +231,8 @@ getCountries <- function(dataDirectory){
 #'
 #' @export
 getCR <- function(countryNames, dataDirectory, cache = TRUE, simu = NULL){
+  dataDirectory <- paste0(dataDirectory, "/")
+
   if(length(countryNames) > 1){
     result <- getCR(countryNames[1], dataDirectory, cache, simu)
 

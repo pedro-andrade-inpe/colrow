@@ -42,7 +42,7 @@ Download world data from Dropbox
 and save them in a single directory. Create a variable in R to store this directory.
 
 ```{r}
-dataDir <- "c:/Users/pedro/Dropbox/colrow/"
+dataDir <- "c:/Users/pedro/Dropbox/colrow"
 ```
 
 The content of the directory should have the following files:
