@@ -2,6 +2,7 @@
 
 export("%>%")
 export(attrs)
+export(buildRelations)
 export(equalSteps)
 export(getCR)
 export(getCRcentroids)

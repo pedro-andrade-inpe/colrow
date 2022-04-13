@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Pedro R. Andrade" />
+
+<meta name="date" content="2020-09-04" />
+
+<title>colrow: Handling SimU, CR, and LU data</title>
+
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+<style type="text/css">
+  p.abstract{
+    text-align: center;
+    font-weight: bold;
+  }
+  div.abstract{
+    margin: auto;
+    width: 90%;
+  }
+</style>
+
+
+
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">colrow: Handling SimU, CR, and LU data</h1>
+<h4 class="author">Pedro R. Andrade</h4>
+<h4 class="date">4 September 2020</h4>
+<div class="abstract">
+<p class="abstract">Abstract</p>
+This package has functions to handle Simulation Units (SimU), ColRow (CR), and Large Unit (LU) data. It shows examples on how to export them as shapefiles, create maps, as well as summarize and plot them over time.
+</div>
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This package allows users to handle CR, SimU, and LU data. In order to start, it is necessary to install the package from GitHub.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;pedro-andrade-inpe/colrow&quot;</span>)</span></code></pre></div>
+<p>If the package will be installed in a Linux machine, it is necessary to manually install some dependencies. Please visit the <a href="http://www.github.com/pedro-andrade-inpe/colrow">webpage of the package</a> in GitHub for more details.</p>
+</div>
+<div id="creating-shapefiles-for-a-given-country" class="section level1">
+<h1>Creating shapefiles for a given country</h1>
+<p>First load the package.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(colrow)</span></code></pre></div>
+<p>Download world data from Dropbox <a href="https://www.dropbox.com/sh/sqocqe45jwmug2p/AAAbv-IAg24a_R4vYsP9zqV_a?dl=0">here</a> and save them in a single directory. Create a variable in R to store this directory.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dataDir <span class="ot">&lt;-</span> <span class="st">&quot;c:/Users/pedro/Dropbox/colrow&quot;</span></span></code></pre></div>
+<p>The content of the directory should have the following files:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(dataDir)</span></code></pre></div>
+<pre><code>##  [1] &quot;COLROW30.aux&quot;     &quot;COLROW30.dbf&quot;     &quot;COLROW30.sbn&quot;     &quot;COLROW30.sbx&quot;    
+##  [5] &quot;COLROW30.shp&quot;     &quot;COLROW30.shx&quot;     &quot;SimU_all.dbf&quot;     &quot;SimU_all.prj&quot;    
+##  [9] &quot;SimU_all.sbn&quot;     &quot;SimU_all.sbx&quot;     &quot;SimU_all.shp&quot;     &quot;SimU_all.shp.xml&quot;
+## [13] &quot;SimU_all.shx&quot;     &quot;g2006_2.dbf&quot;      &quot;g2006_2.shp&quot;      &quot;g2006_2.shp.xml&quot; 
+## [17] &quot;g2006_2.shx&quot;      &quot;version.txt&quot;      &quot;world-cr-lu.zip&quot;  &quot;worldCR.dbf&quot;     
+## [21] &quot;worldCR.prj&quot;      &quot;worldCR.shp&quot;      &quot;worldCR.shx&quot;      &quot;worldLU.dbf&quot;     
+## [25] &quot;worldLU.prj&quot;      &quot;worldLU.shp&quot;      &quot;worldLU.shx&quot;</code></pre>
+<p>To see the available countries in alphabetical order, use <code>getCountries()</code>, passing the data directory as argument. The code below shows the first ten countries.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>colrow<span class="sc">::</span><span class="fu">getCountries</span>(dataDir)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code></pre></div>
+<pre><code>##  [1] &quot;Afghanistan&quot; &quot;Albania&quot;     &quot;Algeria&quot;     &quot;Angola&quot;      &quot;Argentina&quot;  
+##  [6] &quot;Armenia&quot;     &quot;Australia&quot;   &quot;Austria&quot;     &quot;Azerbaijan&quot;  &quot;Bahamas&quot;</code></pre>
+<p>Then use <code>getLU()</code>, <code>getCR()</code>, and/or <code>getSimU()</code> to generate geospatial data for a given country. They get as first argument the country name written in the same way as one of the outputs of <code>getCountries()</code>. The second argument is the directory where the data downloaded from Dropbox was stored. Some of these functions might take time to execute, according to the selected arguments.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>country <span class="ot">&lt;-</span> <span class="st">&quot;Brazil&quot;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>myLU   <span class="ot">&lt;-</span> colrow<span class="sc">::</span><span class="fu">getLU</span>(country, dataDir)</span></code></pre></div>
+<pre><code>## Loading cached version of LU data for Brazil</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>myCR   <span class="ot">&lt;-</span> colrow<span class="sc">::</span><span class="fu">getCR</span>(country, dataDir)</span></code></pre></div>
+<pre><code>## Loading cached version of CR data for Brazil</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>mySimU <span class="ot">&lt;-</span> colrow<span class="sc">::</span><span class="fu">getSimU</span>(country, dataDir)</span></code></pre></div>
+<pre><code>## Spherical geometry (s2) switched off</code></pre>
+<pre><code>## Reading all countries
+## Selecting Brazil
+## Reading all SimUs
+## Subsetting SimUs
+## Joining SimUs</code></pre>
+<pre><code>## Spherical geometry (s2) switched on</code></pre>
+<p>To see that everything is correct, plot the data.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="fl">0.1</span>, <span class="dv">5</span>, <span class="fl">0.1</span>))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">sf_use_s2</span>(<span class="cn">FALSE</span>)</span></code></pre></div>
+<pre><code>## Spherical geometry (s2) switched off</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(mySimU), <span class="at">main =</span> <span class="st">&quot;SimU (Grouped HRU in .5°x.5°)&quot;</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>); <span class="fu">box</span>()</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(myCR),   <span class="at">main =</span> <span class="st">&quot;CR (.5°x.5°)&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>); <span class="fu">box</span>()</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sf<span class="sc">::</span><span class="fu">st_geometry</span>(myLU),   <span class="at">main =</span> <span class="st">&quot;LU (2°x2°)&quot;</span>, <span class="at">col =</span><span class="st">&quot;green&quot;</span>); <span class="fu">box</span>()</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Finally, save the data to be used by the processing functions. Each of these files has a column named <code>ID</code> that will be used to match the objects stored in CSV files. Once these files are saved, it is not necessary to create them again every time outputs are processed.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">write_sf</span>(myLU, <span class="fu">paste0</span>(country, <span class="st">&quot;LU.shp&quot;</span>))</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">write_sf</span>(myCR, <span class="fu">paste0</span>(country, <span class="st">&quot;CR.shp&quot;</span>))</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">write_sf</span>(mySimU, <span class="fu">paste0</span>(country, <span class="st">&quot;SimU.shp&quot;</span>))</span></code></pre></div>
+</div>
+<div id="several-countries-together" class="section level1">
+<h1>Several countries together</h1>
+<p>The same functions above can be used to get several countries together. Just use the names of the countries as a string vector for the first argument. For example, the code below gets LU data for all nine countries of the Amazon basin.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>amazon <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Brazil&quot;</span>, <span class="st">&quot;Peru&quot;</span>, <span class="st">&quot;Colombia&quot;</span>, <span class="st">&quot;Venezuela&quot;</span>,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Ecuador&quot;</span>, <span class="st">&quot;Bolivia&quot;</span>, <span class="st">&quot;Guyana&quot;</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Suriname&quot;</span>, <span class="st">&quot;French Guiana&quot;</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>lu <span class="ot">&lt;-</span> colrow<span class="sc">::</span><span class="fu">getLU</span>(amazon, dataDir)</span></code></pre></div>
+<pre><code>## Loading cached version of LU data for Brazil
+## Loading cached version of LU data for Peru
+## Loading cached version of LU data for Colombia
+## Loading cached version of LU data for Venezuela
+## Loading cached version of LU data for Ecuador
+## Loading cached version of LU data for Bolivia
+## Loading cached version of LU data for Guyana
+## Loading cached version of LU data for Suriname
+## Loading cached version of LU data for French Guiana</code></pre>
+<p>To save the file, just use <code>write_sf()</code>:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">write_sf</span>(lu, <span class="st">&quot;amazonLU.shp&quot;</span>)</span></code></pre></div>
+<p>Then we can plot them together. This and several examples of plotting in this tutorial use <code>tmap</code> package.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(tmap)</span></code></pre></div>
+<pre><code>## Loading required package: tmap</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(lu) <span class="sc">+</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">&quot;Country&quot;</span>) <span class="sc">+</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>)</span></code></pre></div>
+<pre><code>## Linking to GEOS 3.9.1, GDAL 3.2.1, PROJ 7.2.1; sf_use_s2() is FALSE</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>It is important to note that, when working with more than one neighbor countries, there can exist two or more LU (or SimU, or CR) objects with the same ID, but belonging to different countries. In order to deal with that, colrow package returns also the name of the country. For example, there are two objects LU08515, one belonging to Brazil and the other to Peru:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>lu <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(ID <span class="sc">==</span> <span class="st">&quot;LU08515&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Country)</span></code></pre></div>
+<pre><code>##   Country
+## 1  Brazil
+## 2    Peru</code></pre>
+</div>
+<div id="processing-outputs" class="section level1">
+<h1>Processing outputs</h1>
+<p>To process a CSV file, it is necessary to choose the created shapefile that matches the representation used in the CSV. Then, it is necessary to define the attribute names, as the CSV files do not store a header. These names must have one attribute called <code>ID</code> (to match the geometries) and another called <code>VALUE</code> (with the output value). Function <code>processFile()</code> gets the shapefile, the CSV file, and the description of the attributes as arguments. You can use <code>colrow::attrs()</code> to avoid quotes.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>csvfile <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/scenarios/FC/Land_Compare3_FC.csv&quot;</span>, <span class="at">package =</span> <span class="st">&quot;colrow&quot;</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>attributes <span class="ot">&lt;-</span> colrow<span class="sc">::</span><span class="fu">attrs</span>(COUNTRY, ID, ALTI, SLP, SOIL, USE, SCENARIO, YEAR, VALUE)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> colrow<span class="sc">::</span><span class="fu">processFile</span>(<span class="st">&quot;BrazilCR.shp&quot;</span>, csvfile, attributes)</span></code></pre></div>
+<pre><code>## Reading shapefile: BrazilCR.shp
+## Reading data file: C:/Users/pedro/Dropbox/github/colrow/inst/extdata/scenarios/FC/Land_Compare3_FC.CSV</code></pre>
+<pre><code>## 6 objects belong to the shapefile but not to the csv file: CR273185, CR273186, CR274185, CR274186, CR283187, CR283209</code></pre>
+<pre><code>## Ignored attributes: COUNTRY, ALTI, SLP, SOIL, SCENARIO
+## Attributes to be joined: USE, YEAR
+## USE: CrpLnd, PriFor, NatLnd, ForReg, GrsLnd, MngFor, PltFor 
+## YEAR: 2000, 2010, 2020, 2030, 2040, 2050 
+## Spreading the data
+## 40 attributes were created
+## Merging the data
+## Replacing 34340 NA values by zero</code></pre>
+<p>This function automatically ignores all attributes that have only one value (<code>COUNTRY</code>, <code>ALTI</code>, <code>SLP</code>, <code>SOIL</code> and <code>SCENARIO</code> above). The other attributes (except <code>ID</code> and <code>VALUE</code>) compose the created attribute names (<code>USE</code> and <code>YEAR</code> above). They are concatenated according to their order in the CSV file. See the names of the attributes below.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(result)</span></code></pre></div>
+<pre><code>##  [1] &quot;ID&quot;         &quot;Country&quot;    &quot;geometry&quot;   &quot;CrpLnd2000&quot; &quot;CrpLnd2010&quot;
+##  [6] &quot;CrpLnd2020&quot; &quot;CrpLnd2030&quot; &quot;CrpLnd2040&quot; &quot;CrpLnd2050&quot; &quot;ForReg2030&quot;
+## [11] &quot;ForReg2040&quot; &quot;ForReg2050&quot; &quot;GrsLnd2000&quot; &quot;GrsLnd2010&quot; &quot;NatLnd2010&quot;
+## [16] &quot;NatLnd2020&quot; &quot;NatLnd2030&quot; &quot;NatLnd2040&quot; &quot;NatLnd2050&quot; &quot;PriFor2000&quot;
+## [21] &quot;PriFor2010&quot; &quot;PriFor2020&quot; &quot;PriFor2030&quot; &quot;PriFor2040&quot; &quot;PriFor2050&quot;
+## [26] &quot;GrsLnd2020&quot; &quot;GrsLnd2030&quot; &quot;GrsLnd2040&quot; &quot;GrsLnd2050&quot; &quot;NatLnd2000&quot;
+## [31] &quot;MngFor2000&quot; &quot;MngFor2010&quot; &quot;MngFor2020&quot; &quot;MngFor2030&quot; &quot;MngFor2040&quot;
+## [36] &quot;MngFor2050&quot; &quot;PltFor2000&quot; &quot;PltFor2010&quot; &quot;PltFor2020&quot; &quot;PltFor2030&quot;
+## [41] &quot;PltFor2040&quot; &quot;PltFor2050&quot;</code></pre>
+<p>It is possible to plot a map selecting a given attribute using tmap package:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(result) <span class="sc">+</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">&quot;CrpLnd2010&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>It is also possible to use <code>processFile()</code> to save the output when processing a file by adding a fourth argument with the output file name. In this case, this function does not return anything.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>colrow<span class="sc">::</span><span class="fu">processFile</span>(</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;BrazilCR.shp&quot;</span>,</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  csvfile,</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  attributes,</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;brazilLandCompare.shp&quot;</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## Reading shapefile: BrazilCR.shp
+## Reading data file: C:/Users/pedro/Dropbox/github/colrow/inst/extdata/scenarios/FC/Land_Compare3_FC.CSV</code></pre>
+<pre><code>## 6 objects belong to the shapefile but not to the csv file: CR273185, CR273186, CR274185, CR274186, CR283187, CR283209</code></pre>
+<pre><code>## Ignored attributes: COUNTRY, ALTI, SLP, SOIL, SCENARIO
+## Attributes to be joined: USE, YEAR
+## USE: CrpLnd, PriFor, NatLnd, ForReg, GrsLnd, MngFor, PltFor 
+## YEAR: 2000, 2010, 2020, 2030, 2040, 2050 
+## Spreading the data
+## 40 attributes were created
+## Merging the data
+## Replacing 34340 NA values by zero
+## Renaming attributes according to convertList
+## No attribute has more than 10 characters
+## Writing output file: brazilLandCompare.shp</code></pre>
+<p>Note that shapefiles have limits: 255 or less columns, ten or less characters in the attribute names. When working with large attribute names, it is necessary to simplify the names. In the example below, seven names will be replaced by shorter names. For instance, <code>CrpLnd</code> will be replaced by <code>cr</code> in the attribute names.</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>convert <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">CrpLnd =</span> <span class="st">&quot;cr&quot;</span>, <span class="at">PriFor =</span> <span class="st">&quot;pr&quot;</span>,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">NatLnd =</span> <span class="st">&quot;nl&quot;</span>, <span class="at">ForReg =</span> <span class="st">&quot;fr&quot;</span>,</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">GrsLnd =</span> <span class="st">&quot;gl&quot;</span>, <span class="at">MngFor =</span> <span class="st">&quot;mf&quot;</span>,</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">PltFor =</span> <span class="st">&quot;pl&quot;</span> </span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>If you want to simplify the years to two characters, just run:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(year <span class="cf">in</span> <span class="fu">paste</span>(<span class="fu">seq</span>(<span class="dv">2000</span>, <span class="dv">2050</span>, <span class="dv">10</span>))) <span class="co"># from 2000, 2010, ..., 2050</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  convert[[year]] <span class="ot">=</span> <span class="fu">substr</span>(year, <span class="dv">3</span>, <span class="dv">4</span>) <span class="co"># to 00, 10, ..., 50</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="fu">unlist</span>(convert)</span></code></pre></div>
+<pre><code>## CrpLnd PriFor NatLnd ForReg GrsLnd MngFor PltFor   2000   2010   2020   2030 
+##   &quot;cr&quot;   &quot;pr&quot;   &quot;nl&quot;   &quot;fr&quot;   &quot;gl&quot;   &quot;mf&quot;   &quot;pl&quot;   &quot;00&quot;   &quot;10&quot;   &quot;20&quot;   &quot;30&quot; 
+##   2040   2050 
+##   &quot;40&quot;   &quot;50&quot;</code></pre>
+<p>Finally, these simplifications can be used as fifth argument to <code>processFile()</code>.</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>colrow<span class="sc">::</span><span class="fu">processFile</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;BrazilCR.shp&quot;</span>,</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  csvfile,</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  attributes,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;brazilOutput.shp&quot;</span>,</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  convert</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## Reading shapefile: BrazilCR.shp
+## Reading data file: C:/Users/pedro/Dropbox/github/colrow/inst/extdata/scenarios/FC/Land_Compare3_FC.CSV</code></pre>
+<pre><code>## 6 objects belong to the shapefile but not to the csv file: CR273185, CR273186, CR274185, CR274186, CR283187, CR283209</code></pre>
+<pre><code>## Ignored attributes: COUNTRY, ALTI, SLP, SOIL, SCENARIO
+## Attributes to be joined: USE, YEAR
+## USE: CrpLnd, PriFor, NatLnd, ForReg, GrsLnd, MngFor, PltFor 
+## YEAR: 2000, 2010, 2020, 2030, 2040, 2050 
+## Spreading the data
+## 40 attributes were created
+## Merging the data
+## Replacing 34340 NA values by zero
+## Renaming attributes according to convertList
+## No attribute has more than 10 characters
+## Writing output file: brazilOutput.shp</code></pre>
+<p>Sometimes there are more than one <code>VALUE</code> per unique <code>ID</code>, for each unique combination of attributes. In this case, it is necessary to transform all the values into one single result. As default, <code>processFile()</code> sums all the values, but it is possible to use any other function passed as argument, such as <code>mean()</code>. Note that <code>sum()</code> is used for absolute values and <code>mean()</code> for averages. To use another function, use argument <code>aggregate</code>, passing a function as value, as shown in the example below.</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> colrow<span class="sc">::</span><span class="fu">processFile</span>(</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;BrazilCR.shp&quot;</span>,</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">system.file</span>(<span class="st">&quot;extdata/csv/YIELD_COMPARE2.CSV&quot;</span>, <span class="at">package =</span> <span class="st">&quot;colrow&quot;</span>),</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  colrow<span class="sc">::</span><span class="fu">attrs</span>(ID, CROP, ScenYear, VALUE),</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">aggregate =</span> sum <span class="co"># default value, could be omitted</span></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## Reading shapefile: BrazilCR.shp
+## Reading data file: C:/Users/pedro/Dropbox/github/colrow/inst/extdata/csv/YIELD_COMPARE2.CSV</code></pre>
+<pre><code>## 177 objects belong to the shapefile but not to the csv file: CR214192, CR214193, CR218189, CR220180, CR220181, CR221177, CR221178, CR221179, CR221180, CR221181, CR221182, CR221185, CR222177, CR222178, CR222179, CR222180, CR222181, CR222182, CR222183, CR222184, CR222185, CR223177, CR223178, CR223179, CR223180, CR223181, CR223182, CR223183, CR223184, CR223185, CR224177, CR224178, CR224179, CR224180, CR224181, CR224182, CR224183, CR224184, CR224185, CR225176, CR225177, CR225178, CR225179, CR225180, CR225181, CR225182, CR225183, CR225184, CR226176, CR226177, CR226178, CR226179, CR226180, CR226181, CR226182, CR226183, CR226184, CR227178, CR227179, CR227180, CR227181, CR227182, CR227183, CR227184, CR228179, CR228180, CR228181, CR228182, CR228183, CR228192, CR228193, CR229179, CR229180, CR229181, CR229182, CR229183, CR229187, CR229193, CR229194, CR230178, CR230179, CR230180, CR230181, CR230182, CR230183, CR230193, CR230194, CR231178, CR231179, CR231180, CR231181, CR231182, CR231183, CR231184, CR231193, CR232177, CR232178, CR232179, CR232180, CR232181, CR232182, CR232183, CR232184, CR233177, CR233178, CR233179, CR233180, CR233181, CR233182, CR233183, CR233184, CR233185, CR233192, CR233193, CR234177, CR234178, CR234179, CR234180, CR234181, CR234182, CR234183, CR234184, CR234185, CR234192, CR234193, CR235180, CR235181, CR235182, CR235183, CR235184, CR235185, CR235191, CR235192, CR236184, CR236185, CR237185, CR238183, CR238185, CR238199, CR244221, CR245217, CR248176, CR250175, CR255175, CR256173, CR261240, CR264181, CR265231, CR268182, CR270198, CR270202, CR272227, CR273185, CR273186, CR273199, CR273200, CR273227, CR274185, CR274186, CR274197, CR275201, CR275204, CR275205, CR276192, CR276200, CR276205, CR277186, CR278186, CR278187, CR279187, CR280192, CR282187, CR283187, CR283209, CR283212, CR283213, CR284188</code></pre>
+<pre><code>## Ignored attributes: 
+## Attributes to be joined: CROP, ScenYear
+## CROP: Corn, Rice 
+## ScenYear: 2000, 2010 
+## Spreading the data
+## 5 attributes were created
+## Merging the data
+## Replacing 1322 NA values by zero</code></pre>
+</div>
+<div id="plotting-outputs" class="section level1">
+<h1>Plotting outputs</h1>
+<p>To plot the outputs created above, first we read the Brazilian Biomes to be drawn on top of the ColRows. The shapefile with this data is stored in file <code>br_biomes.shp</code> available within <code>colrow</code> package. We will use CR data from <code>brazilLandCompare.shp</code>, created previously in this tutorial.</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>brazil <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">&quot;brazilLandCompare.shp&quot;</span>)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>biomes <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/shape&quot;</span>, <span class="st">&quot;br_biomes.shp&quot;</span>, <span class="at">package =</span> <span class="st">&quot;colrow&quot;</span>) <span class="sc">%&gt;%</span> sf<span class="sc">::</span><span class="fu">read_sf</span>()</span></code></pre></div>
+<p>The next step is to select a palette from the functions availables in <code>RColorBrewer</code>, using <code>brewer.pal()</code> (see the description of all colors available <a href="http://colorbrewer2.org">here</a>), and to choose the cuts to represent the intervals of each slice. In the code below, as we have seven cuts, we need to define six colors.</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(brazil<span class="sc">$</span>GrsLnd2010)</span></code></pre></div>
+<pre><code>## [1] 303.33</code></pre>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>cuts <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">200</span>, <span class="dv">250</span>, <span class="dv">305</span>)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>rdPu <span class="ot">&lt;-</span> RColorBrewer<span class="sc">::</span><span class="fu">brewer.pal</span>(<span class="dv">6</span>, <span class="st">&quot;RdPu&quot;</span>)</span></code></pre></div>
+<p>Finally, use <code>tm_shape()</code>, <code>tm_fill()</code>, and <code>tm_borders()</code> to draw the map.</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(brazil) <span class="sc">+</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">&quot;GrsLnd2010&quot;</span>, <span class="at">palette =</span> rdPu, <span class="at">breaks =</span> cuts, <span class="at">title =</span> <span class="st">&quot;Grass 2010&quot;</span>) <span class="sc">+</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(biomes) <span class="sc">+</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>If only part of the map is necessary, it is possible to zoom in the map to a given region by selecting a <code>bbox</code> to the <code>tm_shape()</code>:</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>amazCerradoBox <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="fl">74.5</span>, <span class="at">xmax =</span> <span class="sc">-</span><span class="fl">41.4</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">25</span>, <span class="at">ymax =</span> <span class="fl">5.5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  sf<span class="sc">::</span><span class="fu">st_bbox</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(<span class="dv">4326</span>))</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(brazil, <span class="at">bbox =</span> amazCerradoBox) <span class="sc">+</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">&quot;GrsLnd2010&quot;</span>, <span class="at">palette =</span> rdPu, <span class="at">title =</span> <span class="st">&quot;Grass 2010&quot;</span>) <span class="sc">+</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(biomes) <span class="sc">+</span></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>To save this or any other plot created within R into a file using tmap package, it is necessary to store the plot into a variable and then call <code>tmap_save()</code>. For example, the following code creates variable <code>result</code> storing the same map created above and then saves it into file <code>amz-cerrado.png</code> in the current directory.</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(brazil, <span class="at">bbox =</span> amazCerradoBox) <span class="sc">+</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">&quot;GrsLnd2010&quot;</span>, <span class="at">palette =</span> rdPu, <span class="at">title =</span> <span class="st">&quot;Grass 2010&quot;</span>) <span class="sc">+</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(biomes) <span class="sc">+</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>)</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_save</span>(result, <span class="st">&quot;amaz-cerrado.png&quot;</span>)</span></code></pre></div>
+<pre><code>## Map saved to C:\Users\pedro\Dropbox\github\colrow\vignettes\amaz-cerrado.png</code></pre>
+<pre><code>## Resolution: 2171.821 by 2030.554 pixels</code></pre>
+<pre><code>## Size: 7.239403 by 6.768513 inches (300 dpi)</code></pre>
+<p>It is also possible to create several maps using <code>plotAll()</code>. This function automatically uses all the values of several attributes with the same prefix in order to define a common legend, with the same maximum and minimum values. The following code creates six pdf files, each one plotting grassland, from 2000 to 2050.</p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(tmap)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plotAll</span>(brazil, <span class="st">&quot;GrsLnd&quot;</span>, <span class="at">palette =</span> <span class="st">&quot;RdPu&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Grass&quot;</span>, <span class="at">additional =</span>     </span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(biomes) <span class="sc">+</span></span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>)</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## Processing attribute &#39;GrsLnd2000&#39;</code></pre>
+<pre><code>## Map saved to C:\Users\pedro\Dropbox\github\colrow\vignettes\GrsLnd2000.pdf</code></pre>
+<pre><code>## Size: 6.902778 by 7.083333 inches</code></pre>
+<pre><code>## Processing attribute &#39;GrsLnd2010&#39;</code></pre>
+<pre><code>## Map saved to C:\Users\pedro\Dropbox\github\colrow\vignettes\GrsLnd2010.pdf
+## Size: 6.902778 by 7.083333 inches</code></pre>
+<pre><code>## Processing attribute &#39;GrsLnd2020&#39;</code></pre>
+<pre><code>## Map saved to C:\Users\pedro\Dropbox\github\colrow\vignettes\GrsLnd2020.pdf
+## Size: 6.902778 by 7.083333 inches</code></pre>
+<pre><code>## Processing attribute &#39;GrsLnd2030&#39;</code></pre>
+<pre><code>## Map saved to C:\Users\pedro\Dropbox\github\colrow\vignettes\GrsLnd2030.pdf
+## Size: 6.902778 by 7.083333 inches</code></pre>
+<pre><code>## Processing attribute &#39;GrsLnd2040&#39;</code></pre>
+<pre><code>## Map saved to C:\Users\pedro\Dropbox\github\colrow\vignettes\GrsLnd2040.pdf
+## Size: 6.902778 by 7.083333 inches</code></pre>
+<pre><code>## Processing attribute &#39;GrsLnd2050&#39;</code></pre>
+<pre><code>## Map saved to C:\Users\pedro\Dropbox\github\colrow\vignettes\GrsLnd2050.pdf
+## Size: 6.902778 by 7.083333 inches</code></pre>
+</div>
+<div id="handling-csv-files" class="section level1">
+<h1>Handling CSV files</h1>
+<p>You can handle CSV files directly to create charts or to compute values without creating shapefiles. First read data as a tibble using <code>readCSV()</code>:</p>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> colrow<span class="sc">::</span><span class="fu">readCSV</span>(</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">system.file</span>(<span class="st">&quot;extdata/scenarios/FC/Land_Compare3_FC.csv&quot;</span>, <span class="at">package =</span> <span class="st">&quot;colrow&quot;</span>),</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  colrow<span class="sc">::</span><span class="fu">attrs</span>(COUNTRY, ID, ALTICLASS, SLPCLASS, SOILCLASS, USE, SCENARIO, YEAR, VALUE)</span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>To get the unique values per class, just use <code>unique()</code>:</p>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(data<span class="sc">$</span>USE)</span></code></pre></div>
+<pre><code>## [1] &quot;CrpLnd&quot; &quot;PriFor&quot; &quot;NatLnd&quot; &quot;ForReg&quot; &quot;GrsLnd&quot; &quot;MngFor&quot; &quot;PltFor&quot;</code></pre>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(data<span class="sc">$</span>YEAR)</span></code></pre></div>
+<pre><code>## [1] 2000 2010 2020 2030 2040 2050</code></pre>
+<p>To check if the sum of all land use areas are the same for each year use some <code>dplyr</code> functions:</p>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(YEAR) <span class="sc">%&gt;%</span></span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">VALUE =</span> <span class="fu">sum</span>(VALUE))</span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a>result</span></code></pre></div>
+<pre><code>## # A tibble: 6 x 2
+##    YEAR   VALUE
+##   &lt;dbl&gt;   &lt;dbl&gt;
+## 1  2000 584619.
+## 2  2010 584619.
+## 3  2020 584619.
+## 4  2030 584618.
+## 5  2040 584618.
+## 6  2050 584618.</code></pre>
+<p>Then let us now compute the total of each land use area per year and rename the attributes in order to use them directly in the plot.</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(YEAR, USE) <span class="sc">%&gt;%</span></span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">VALUE =</span> <span class="fu">sum</span>(VALUE)) <span class="sc">%&gt;%</span>  <span class="co"># sum by year/use</span></span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Year =</span> YEAR, <span class="at">Use =</span> USE) <span class="sc">%&gt;%</span> <span class="co"># rename variables</span></span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Use =</span> dplyr<span class="sc">::</span><span class="fu">recode</span>(Use,    <span class="co"># rename attributes</span></span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">CrpLnd =</span> <span class="st">&quot;Crop Land&quot;</span>,</span>
+<span id="cb82-7"><a href="#cb82-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">ForReg =</span> <span class="st">&quot;Forest Regrowth&quot;</span>,</span>
+<span id="cb82-8"><a href="#cb82-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">GrsLnd =</span> <span class="st">&quot;Grass Land&quot;</span>,</span>
+<span id="cb82-9"><a href="#cb82-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">MngFor =</span> <span class="st">&quot;Managed Forest&quot;</span>,</span>
+<span id="cb82-10"><a href="#cb82-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">NatLnd =</span> <span class="st">&quot;Natural Land&quot;</span>,</span>
+<span id="cb82-11"><a href="#cb82-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">PltFor =</span> <span class="st">&quot;Planted Forest&quot;</span>,</span>
+<span id="cb82-12"><a href="#cb82-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">PriFor =</span> <span class="st">&quot;Primary Forest&quot;</span>))</span></code></pre></div>
+<pre><code>## `summarise()` has grouped output by &#39;YEAR&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>result</span></code></pre></div>
+<pre><code>## # A tibble: 39 x 5
+## # Groups:   YEAR [6]
+##     YEAR USE      VALUE  Year Use           
+##    &lt;dbl&gt; &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;         
+##  1  2000 CrpLnd  39983.  2000 Crop Land     
+##  2  2000 GrsLnd 214941.  2000 Grass Land    
+##  3  2000 MngFor  41955.  2000 Managed Forest
+##  4  2000 NatLnd  73001.  2000 Natural Land  
+##  5  2000 PltFor   6005.  2000 Planted Forest
+##  6  2000 PriFor 208736.  2000 Primary Forest
+##  7  2010 CrpLnd  60109.  2010 Crop Land     
+##  8  2010 GrsLnd 240326.  2010 Grass Land    
+##  9  2010 MngFor  45416.  2010 Managed Forest
+## 10  2010 NatLnd  54057.  2010 Natural Land  
+## # ... with 29 more rows</code></pre>
+<p>Finally, just use <code>ggplot()</code> to draw the evolution of each land use area per year.</p>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(ggplot2)</span></code></pre></div>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(result) <span class="sc">+</span></span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> VALUE, <span class="at">colour =</span> Use) <span class="sc">+</span></span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">lwd =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Total (ha)&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="subsetting-data-for-study-area" class="section level1">
+<h1>Subsetting data for Study Area</h1>
+<p>Sometimes the user needs to use only the results of a given study area. Let us suppose that this area is Amazon biome. We can simply use <code>sf::st_intersects()</code> to subset the objects.</p>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>amaz <span class="ot">&lt;-</span> biomes[<span class="dv">1</span>,] <span class="sc">%&gt;%</span> sf<span class="sc">::</span><span class="fu">st_transform</span>(<span class="at">crs =</span> sf<span class="sc">::</span><span class="fu">st_crs</span>(myLU))</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>subset <span class="ot">&lt;-</span> myLU[<span class="fu">apply</span>(sf<span class="sc">::</span><span class="fu">st_intersects</span>(myLU, amaz), <span class="dv">1</span>, any),]</span></code></pre></div>
+<pre><code>## although coordinates are longitude/latitude, st_intersects assumes that they are planar</code></pre>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(subset) <span class="sc">+</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="at">col =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(amaz) <span class="sc">+</span></span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>)</span>
+<span id="cb91-6"><a href="#cb91-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb91-7"><a href="#cb91-7" aria-hidden="true" tabindex="-1"></a>result</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="final-remarks" class="section level1">
+<h1>Final remarks</h1>
+<p>If you have any suggestions or want to report an error, please visit the GitHub page of the package <a href="https://github.com/pedro-andrade-inpe/colrow">here</a>.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -3,17 +3,12 @@ title: 'colrow: Handling SimU, CR, and LU data'
 author: "Pedro R. Andrade"
 date: "`r format('4 September 2020')`"
 urlcolor: blue
-output:
-  pdf_document:
-    fig_caption: yes
-    latex_engine: pdflatex
-  html_document:
-    df_print: paged
+output: rmarkdown::html_vignette
 abstract: This package has functions to handle Simulation Units (SimU), ColRow (CR), and Large Unit (LU) data. It shows examples on how to export them as shapefiles, create maps, as well as summarize and plot them over time.
 vignette: |
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{colrow: Handling SimU, CR, and LU datas}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{colrow: Handling SimU, CR, and LU data}
 ---
 
 # Introduction 
