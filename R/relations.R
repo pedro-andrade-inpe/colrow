@@ -15,6 +15,10 @@
 #' simple feature.
 #' @export
 buildRelations <- function(geom, ref, id){
+#  geom=myLU
+#  ref=biomes
+#  id="CD_LEGEN1"
+
   old <- sf::sf_use_s2()
   sf::sf_use_s2(FALSE)
 
@@ -28,11 +32,9 @@ buildRelations <- function(geom, ref, id){
 
   result <- as.data.frame(myintersect) %>%
     dplyr::select(ID, !!id, area) %>%
-    dplyr::transmute(ID1 = ID, ID2 = !!id, area = area)
+    dplyr::rename(ID1 = ID, ID2 = !!id, area = area)
 
   sf::sf_use_s2(old)
 
   return(result)
 }
-
-

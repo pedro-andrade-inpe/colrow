@@ -13,5 +13,7 @@ test_that("relations", {
 
   result <- buildRelations(myLU, biomes, "CD_LEGEN1")
 
+  expect(all(names(result) %in% c("ID1", "ID2", "area")), "names do not match")
+
   expect_equal(sum(result$area), units::set_units(837.3038, "Mha"), 0.0001)
 })
