@@ -39,7 +39,14 @@ buildRelations <- function(geom, ref, id){
   return(result)
 }
 
-
+#' @title Normalize relations according to the area
+#' @description Normalize the relations according to the covered area. This
+#' function is useful to distribute SimU, CR, or LU to other polygonal
+#' representations. The returned values equal to 1 are completely distributed
+#' to a single polygon. Whenever a value is less than 1, the SimU, CR, or LU
+#' overlaps with two or more polygons, meaning that the content will be
+#' divided to the respective polygons according to the intersection area.
+#' @param data A tibble comming from buildRelations().
 #' @export
 normalizeRelationsByArea <- function(data){
   result <- data %>%
@@ -51,3 +58,15 @@ normalizeRelationsByArea <- function(data){
   return(result)
 }
 
+#' @title Filter the relations with greater area
+#' @description Filter the relations with the greater intersection area. The
+#' output will have only one row per each SimU, CR, or LU.
+#' @param data A tibble comming from normalizeRelationsByArea().
+#' @export
+filterGreater <- function(data){
+  result <- result %>%
+    group_by(ID1) %>%
+    filter(area == max(area))
+
+  return(result)
+}
