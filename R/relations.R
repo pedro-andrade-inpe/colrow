@@ -38,3 +38,16 @@ buildRelations <- function(geom, ref, id){
 
   return(result)
 }
+
+
+#' @export
+normalizeRelationsByArea <- function(data){
+  result <- data %>%
+    mutate(area = units::drop_units(area)) %>%
+    dplyr::group_by(ID1) %>%
+    dplyr::mutate(area = area / sum(area)) %>%
+    dplyr::arrange(ID1)
+
+  return(result)
+}
+
