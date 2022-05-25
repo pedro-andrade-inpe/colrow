@@ -4,7 +4,7 @@
 \alias{buildRelations}
 \title{Overlap between two polygonal simple features}
 \usage{
-buildRelations(geom, ref, id)
+buildRelations(geom, ref, id, normalize = TRUE)
 }
 \arguments{
 \item{geom}{First simple feature, whose unique identified is the attribute ID.
@@ -15,6 +15,9 @@ GLOBIOM representation.}
 
 \item{id}{The attribute to be used as unique identifier for the second
 simple feature.}
+
+\item{normalize}{normalizeRelationsByArea() should be called with the result?
+Default is TRUE.}
 }
 \description{
 Computes the overlap between each pair of objects from two

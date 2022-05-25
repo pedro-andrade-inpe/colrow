@@ -13,8 +13,10 @@
 #' GLOBIOM representation.
 #' @param id The attribute to be used as unique identifier for the second
 #' simple feature.
+#' @param normalize normalizeRelationsByArea() should be called with the result?
+#' Default is TRUE.
 #' @export
-buildRelations <- function(geom, ref, id){
+buildRelations <- function(geom, ref, id, normalize = TRUE){
 #  geom=myLU
 #  ref=biomes
 #  id="CD_LEGEN1"
@@ -32,9 +34,13 @@ buildRelations <- function(geom, ref, id){
 
   result <- as.data.frame(myintersect) %>%
     dplyr::select(ID, !!id, area) %>%
-    dplyr::rename(ID1 = ID, ID2 = !!id, area = area)
+    dplyr::rename(ID1 = ID, ID2 = !!id, area = area) %>%
+    dplyr::arrange(ID1)
 
   sf::sf_use_s2(old)
+
+  if(normalize)
+    result <- normalizeRelationsByArea(result)
 
   return(result)
 }
@@ -46,11 +52,11 @@ buildRelations <- function(geom, ref, id){
 #' to a single polygon. Whenever a value is less than 1, the SimU, CR, or LU
 #' overlaps with two or more polygons, meaning that the content will be
 #' divided to the respective polygons according to the intersection area.
-#' @param data A tibble comming from buildRelations().
+#' @param data A tibble coming from buildRelations().
 #' @export
 normalizeRelationsByArea <- function(data){
   result <- data %>%
-    mutate(area = units::drop_units(area)) %>%
+    dplyr::mutate(area = units::drop_units(area)) %>%
     dplyr::group_by(ID1) %>%
     dplyr::mutate(area = area / sum(area)) %>%
     dplyr::arrange(ID1)
@@ -64,9 +70,28 @@ normalizeRelationsByArea <- function(data){
 #' @param data A tibble comming from normalizeRelationsByArea().
 #' @export
 filterGreater <- function(data){
-  result <- result %>%
-    group_by(ID1) %>%
-    filter(area == max(area))
+  result <- data %>%
+    dplyr::group_by(ID1) %>%
+    dplyr::slice_max(n = 1, order_by = area) %>%
+    dplyr::arrange(ID1) %>%
+    dplyr::mutate(area = 1)
 
   return(result)
+}
+
+#' @title Write relations to gms data
+#' @description Write the relations to a gms data to be read by GAMS.
+#' @param data A tibble coming from normalizeRelationsByArea() or filterGreater().
+#' @param country The country name.
+#' @param representation A string that can be "SimU", "CR", or "LU".
+#' @param attr A string with the attribute name.
+#' @param filename The output filename.
+#' @export
+writeRelationsGMS <- function(data, country, representation, attr, filename){
+  res <- paste0(country, ".", data$ID1, ".", data$ID2, "\t", data$area) %>% data.frame()
+
+  colnames(res) <- paste0("PARAMETER PRIORITY\n(COUNTRY,", representation, ",", attr, ") ",
+                          " sourcing in percentage\n/")
+
+  write.table(res, filename, row.names = FALSE, quote = FALSE)
 }

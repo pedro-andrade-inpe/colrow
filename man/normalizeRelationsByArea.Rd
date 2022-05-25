@@ -7,7 +7,7 @@
 normalizeRelationsByArea(data)
 }
 \arguments{
-\item{data}{A tibble comming from buildRelations().}
+\item{data}{A tibble coming from buildRelations().}
 }
 \description{
 Normalize the relations according to the covered area. This
