@@ -1,8 +1,8 @@
 Package: colrow
 Type: Package
 Title: Handling SimU, CR, and LU data
-Version: 0.5-4
-Date: 2022-04-13
+Version: 0.5-5
+Date: 2022-05-25
 Authors@R: c(person('Pedro', 'Andrade', role = c('aut', 'cre'), email = 'pedro.andrade@inpe.br'))
 Maintainer: Pedro R. Andrade <pedro.andrade@inpe.br>
 Description: A set of functions to handle SimU, CR, and LU data.
