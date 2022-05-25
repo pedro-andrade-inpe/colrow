@@ -23,8 +23,6 @@ mySimU <- colrow::getSimU(country, dataDir)
 ## -----------------------------------------------------------------------------
 par(mfrow = c(1, 3), mar = c(5, 0.1, 5, 0.1))
 
-sf::sf_use_s2(FALSE)
-
 plot(sf::st_geometry(mySimU), main = "SimU (Grouped HRU in .5°x.5°)", col = "red"); box()
 plot(sf::st_geometry(myCR),   main = "CR (.5°x.5°)", col = "blue"); box()
 plot(sf::st_geometry(myLU),   main = "LU (2°x2°)", col ="green"); box()
@@ -46,6 +44,7 @@ sf::write_sf(lu, "amazonLU.shp")
 
 ## -----------------------------------------------------------------------------
 require(tmap)
+sf::sf_use_s2(FALSE)
 
 tm_shape(lu) +
   tm_fill(col = "Country") +

@@ -83,9 +83,9 @@ Once these files are saved, it is not necessary to create them again every time
 outputs are processed.
 
 ```{r}
-sf::write_sf(myLU, paste0(country, "LU.shp"))
-sf::write_sf(myCR, paste0(country, "CR.shp"))
-sf::write_sf(mySimU, paste0(country, "SimU.shp"))
+sf::write_sf(myLU, paste0(country, "LU.gpkg"))
+sf::write_sf(myCR, paste0(country, "CR.gpkg"))
+sf::write_sf(mySimU, paste0(country, "SimU.gpkg"))
 ```
 
 # Several countries together
@@ -105,7 +105,7 @@ lu <- colrow::getLU(amazon, dataDir)
 To save the file, just use `write_sf()`:
 
 ```{r}
-sf::write_sf(lu, "amazonLU.shp")
+sf::write_sf(lu, "amazonLU.gpkg")
 ```
 
 Then we can plot them together.
@@ -113,6 +113,7 @@ This and several examples of plotting in this tutorial use `tmap` package.
 
 ```{r}
 require(tmap)
+sf::sf_use_s2(FALSE)
 
 tm_shape(lu) +
   tm_fill(col = "Country") +
@@ -147,7 +148,7 @@ You can use `colrow::attrs()` to avoid quotes.
 csvfile <- system.file("extdata/scenarios/FC/Land_Compare3_FC.csv", package = "colrow")
 attributes <- colrow::attrs(COUNTRY, ID, ALTI, SLP, SOIL, USE, SCENARIO, YEAR, VALUE)
 
-result <- colrow::processFile("BrazilCR.shp", csvfile, attributes)
+result <- colrow::processFile("BrazilCR.gpkg", csvfile, attributes)
 ```
 
 This function automatically ignores all attributes that have only one value (`COUNTRY`, `ALTI`,
@@ -172,10 +173,10 @@ a fourth argument with the output file name. In this case, this function does no
 
 ```{r}
 colrow::processFile(
-  "BrazilCR.shp",
+  "BrazilCR.gpkg",
   csvfile,
   attributes,
-  "brazilLandCompare.shp"
+  "brazilLandCompare.gpkg"
 )
 ```
 
@@ -205,10 +206,10 @@ Finally, these simplifications can be used as fifth argument to `processFile()`.
 
 ```{r}
 colrow::processFile(
-  "BrazilCR.shp",
+  "BrazilCR.gpkg",
   csvfile,
   attributes,
-  "brazilOutput.shp",
+  "brazilOutput.gpkg",
   convert
 )
 ```
@@ -222,7 +223,7 @@ function as value, as shown in the example below.
 
 ```{r}
 result <- colrow::processFile(
-  "BrazilCR.shp",
+  "BrazilCR.gpkg",
   system.file("extdata/csv/YIELD_COMPARE2.CSV", package = "colrow"),
   colrow::attrs(ID, CROP, ScenYear, VALUE),
   aggregate = sum # default value, could be omitted
@@ -233,15 +234,15 @@ result <- colrow::processFile(
 
 To plot the outputs created above, first we read the Brazilian Biomes to be drawn on top
 of the ColRows. The shapefile
-with this data is stored in file `br_biomes.shp` available within `colrow` package. We will
-use CR data from `brazilLandCompare.shp`, created previously in this tutorial.
+with this data is stored in file `br_biomes.gpkg` available within `colrow` package. We will
+use CR data from `brazilLandCompare.gpkg`, created previously in this tutorial.
 
 ```{r}
-brazil <- sf::read_sf("brazilLandCompare.shp")
+brazil <- sf::read_sf("brazilLandCompare.gpkg")
 biomes <- system.file("extdata/shape", "br_biomes.shp", package = "colrow") %>% sf::read_sf()
 ```
 
-The next step is to select a palette from the functions availables in `RColorBrewer`, using `brewer.pal()`
+The next step is to select a palette from the functions available in `RColorBrewer`, using `brewer.pal()`
 (see the description of all colors available [here](http://colorbrewer2.org)), and
 to choose the cuts to represent the intervals of each slice. In the code below, as we have
 seven cuts, we need to define six colors.
