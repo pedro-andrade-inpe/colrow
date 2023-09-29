@@ -1,15 +1,13 @@
 
-require(rgdal)
 require(colrow)
+require(magrittr)
 
-brazil_cr <- system.file("extdata/results", "IDC_Amazon.shp",   package = "colrow") %>% readOGR()
-biomes    <- system.file("extdata/shape", "br_biomes.shp",      package = "colrow") %>% readOGR()
-states    <- system.file("extdata/shape", "br_states.shp",      package = "colrow") %>% readOGR()
-amzlegal  <- system.file("extdata/shape", "legal_amazonia.shp", package = "colrow") %>% readOGR()
+brazil_cr <- system.file("extdata/results", "IDC_Amazon.shp",   package = "colrow") %>% sf::read_sf()
+biomes    <- system.file("extdata/shape", "br_biomes.shp",      package = "colrow") %>% sf::read_sf()
+states    <- system.file("extdata/shape", "br_states.shp",      package = "colrow") %>% sf::read_sf()
+amzlegal  <- system.file("extdata/shape", "legal_amazonia.shp", package = "colrow") %>% sf::read_sf()
 
-statessp   <- list("sp.polygons", states,   fill = "transparent", col = "black", add = TRUE)
-amzlegalsp <- list("sp.polygons", amzlegal, fill = "transparent", col = "black", add = TRUE, lty = 2, first = FALSE)
-biomessp   <- list("sp.polygons", biomes,   fill = "transparent", col = "black", add = TRUE, first = FALSE)
+brazil_cr <- sf::st_make_valid(brazil_cr)
 
 oranges      <- RColorBrewer::brewer.pal(9, "Oranges")
 blues        <- RColorBrewer::brewer.pal(9, "Blues")
@@ -21,21 +19,21 @@ rdPu         <- RColorBrewer::brewer.pal(9, "RdPu")
 
 cuts <-c (0.0, 5.92, 16.76, 37.33, 71.11, 130.38, 211.54, 260, 294, 308)
 
-spplot(
-  brazil_cr[,"Rice2000"],
-  at = cuts,
-  col = "transparent", # remove this line to draw the border of each CR
-  col.regions = oranges,
-  sp.layout = list(biomessp, amzlegalsp)
-)
+tmap::tm_shape(brazil_cr) +
+  tmap::tm_fill(col = "Rice2000", breaks = cuts) +
+  tmap::tm_layout(legend.outside = TRUE) +
+  tmap::tm_shape(amzlegal) +
+  tmap::tm_borders(lwd = 2) +
+  tmap::tm_shape(biomes) +
+  tmap::tm_borders(lwd = 1)
 
-cuts <- equalSteps(data = brazil_cr[,"Rice2000"], slices = 6)
+cuts <- colrow::equalSteps(data = brazil_cr[, "Rice2000"], slices = 6)
 cuts
 
-spplot(
-  brazil_cr[,"Rice2000"],
-  at = cuts,
-  col = "transparent", # remove this line to draw the border of each CR
-  col.regions = oranges,
-  sp.layout = list(biomessp, amzlegalsp)
-)
+tmap::tm_shape(brazil_cr) +
+  tmap::tm_fill(col = "Rice2000", breaks = cuts) +
+  tmap::tm_layout(legend.outside = TRUE) +
+  tmap::tm_shape(amzlegal) +
+  tmap::tm_borders(lwd = 2) +
+  tmap::tm_shape(biomes) +
+  tmap::tm_borders(lwd = 1)

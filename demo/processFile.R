@@ -14,14 +14,13 @@ for(year in paste(seq(2000, 2050, 5)))
 result <- colrow::processFile(
   "BrazilCR.shp",
   "CROP_DATA_COMPARE_5yr_FC_Had_rcp8p5.CSV",
-  c(COUNTRY, ID, ALTICLASS, SLPCLASS, SOILCLASS, XX1, USE, XX2, USE2, XXX3, SCENARIO, SCENARIO2, YEAR, VALUE)
+  colrow::attrs(COUNTRY, ID, ALTICLASS, SLPCLASS, SOILCLASS, XX1, USE, XX2, USE2, XXX3, SCENARIO, SCENARIO2, YEAR, VALUE)
 )
 
 data <- sf::as_Spatial(result)
 
-require(rgdal)
+biomes   <- sf::read_sf(system.file("extdata/shape", "br_biomes.shp", package = "colrow"))
 
-biomes   <- system.file("extdata/shape", "br_biomes.shp",      package = "colrow") %>% readOGR()
 biomessp <- list("sp.polygons", biomes,   fill = "transparent", col = "black", add = TRUE, first = FALSE)
 
 ylGn <- RColorBrewer::brewer.pal(7, "RdPu")

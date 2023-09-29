@@ -1,8 +1,8 @@
 Package: colrow
 Type: Package
 Title: Handling SimU, CR, and LU data
-Version: 0.5-5
-Date: 2022-05-25
+Version: 0.6-0
+Date: 2023-09-15
 Authors@R: c(person('Pedro', 'Andrade', role = c('aut', 'cre'), email = 'pedro.andrade@inpe.br'))
 Maintainer: Pedro R. Andrade <pedro.andrade@inpe.br>
 Description: A set of functions to handle SimU, CR, and LU data.
@@ -15,14 +15,12 @@ Imports:
     dplyr,
     tibble,
     tidyr,
-    rgdal,
     tools,
     readr,
     crayon,
     stringdist,
     magrittr,
     sf,
-    maptools,
     stringr,
     tmap,
     RColorBrewer
@@ -33,7 +31,7 @@ Suggests:
     testthat,
     units,
     rmarkdown
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Collate:
 	'pipe.R'
 	'process.R'

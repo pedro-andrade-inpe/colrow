@@ -148,7 +148,7 @@ getSimU <- function(countryNames, dataDirectory, join = TRUE, simu = NULL){
 getLU <- function(countryNames = NULL, dataDirectory, cache = TRUE, simu = NULL, as.cr = NULL){
   dataDirectory <- paste0(dataDirectory, "/")
 
-    if(is.null(countryNames)){
+  if(is.null(countryNames)){
     countryNames <- colrow::getCountries()
   }
 
@@ -182,7 +182,7 @@ getLU <- function(countryNames = NULL, dataDirectory, cache = TRUE, simu = NULL,
     return(result)
   }
 
-  res <- colrow::getSimU(countryNames, dataDirectory, FALSE, simu)
+  res <- colrow::getSimU(countryNames, dataDirectory, FALSE)
 
   if(dim(res)[1] == 0) return(NULL)
 
@@ -198,12 +198,12 @@ getLU <- function(countryNames = NULL, dataDirectory, cache = TRUE, simu = NULL,
 
   cat(crayon::green("Computing union of SimUs within the same LU\n"))
 
-  countryLU <- maptools::unionSpatialPolygons(sf::as_Spatial(data), data$LU)
+  plot(sf::st_geometry(data))
 
-  ids <- row.names(countryLU)
-
-  countryLU <- sf::st_as_sf(countryLU)
-  countryLU$ID <- ids
+  countryLU <- data %>%
+    dplyr::group_by(LU) %>%
+    dplyr::summarize() %>%
+    dplyr::mutate(ID = row.names(.))
 
   countryLU
 }

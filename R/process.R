@@ -148,14 +148,14 @@ processFile <- function(shapefile, csvfile, description, outputfile = NULL, conv
 }
 
 processScenario <- function(shapefile, scenario, output){
-  shp <- rgdal::readOGR(shapefile, encoding = "ESRI Shapefile", verbose = FALSE)
+  shp <- sf::read_sf(shapefile)
 
-  shp@data[is.na(shp@data)] <- 0.0
+  shp <- shp %>%
+    dplyr::mutate(dplyr::across(tidyr::everything(), ~tidyr::replace_na(.x, 0)))
 
   cat(paste0("Writing file '", basename(scenario), ".shp'\n"))
 
-  # FIXME use sf instead
-  rgdal::writeOGR(shp, output, basename(scenario), driver = "ESRI Shapefile", overwrite_layer = TRUE)
+  sf::write_sf(shp, output, basename(scenario), delete_dsn = TRUE)
 }
 
 #' @title Return the scenarios of a directory

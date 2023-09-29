@@ -1,9 +1,9 @@
 ---
 title: 'colrow: Handling SimU, CR, and LU data'
 author: "Pedro R. Andrade"
-date: "`r format('4 September 2020')`"
+date: "`r format('28 September 2023')`"
 urlcolor: blue
-output: rmarkdown::html_vignette
+output: rmarkdown::pdf_document
 abstract: This package has functions to handle Simulation Units (SimU), ColRow (CR), and Large Unit (LU) data. It shows examples on how to export them as shapefiles, create maps, as well as summarize and plot them over time.
 vignette: |
   %\VignetteEncoding{UTF-8}
@@ -97,7 +97,7 @@ below gets LU data for all nine countries of the Amazon basin.
 ```{r}
 amazon <- c("Brazil", "Peru", "Colombia", "Venezuela",
             "Ecuador", "Bolivia", "Guyana",
-            "Suriname", "French Guiana")
+            "Suriname", "FrGuiana")
 
 lu <- colrow::getLU(amazon, dataDir)
 ```
