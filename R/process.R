@@ -43,7 +43,7 @@ readCSV <- function(csvfile, product){
 #' the created attribute names.
 #' @export
 processFile <- function(shapefile, csvfile, description, outputfile = NULL, convertList = NULL, aggregate = sum, ignore = NULL, toAggregate = NULL) {
-  if(class(description) != "character") stop(paste0("Argument 'description' should be 'character', got '", class(description), "'."))
+  if(!is(description, "character")) stop(paste0("Argument 'description' should be 'character', got '", class(description), "'."))
 
   cat(paste0("Reading shapefile: ", shapefile, "\n"))
   shp <- sf::read_sf(shapefile)

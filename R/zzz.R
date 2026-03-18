@@ -6,4 +6,4 @@
 }
 
 utils::globalVariables(c("%>%", ".", "ALLCOUNTRY", "COUNTRY", "ColRow", "Country", "ID", "KEY",
-                       "SimU", "SimUID", "VALUE", "X", "Y", "LU", "values", "area"))
+                       "SimU", "SimUID", "VALUE", "X", "Y", "LU", "values", "area", "ID1", "write.table"))
